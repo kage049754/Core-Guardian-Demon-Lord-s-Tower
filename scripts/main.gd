@@ -58,6 +58,8 @@ var skill_cooldown := 0.0
 var skill_ready := true
 var screen_size := Vector2(720, 1280)
 var ui_layer: CanvasLayer
+var menu_overlay: Control
+var menu_open := true
 var hud_label: Label
 var status_label: Label
 var buttons: Array[Button] = []
@@ -83,7 +85,7 @@ func _process(delta: float) -> void:
 	if skill_cooldown > 0.0:
 		skill_cooldown = maxf(0.0, skill_cooldown - delta)
 		skill_ready = skill_cooldown <= 0.0
-	if not lost and not campaign_won:
+	if not menu_open and not lost and not campaign_won:
 		game_clock += delta
 		_update_combat(delta)
 		_update_ui()
@@ -135,6 +137,7 @@ func _build_ui() -> void:
 	_add_button(root, "EVOLVE CORE  ·  3 research", Rect2(22, y + 234, 328, 52), _evolve_core)
 	_add_button(root, "BUY RESEARCH  ·  %d gold / 1 point" % _research_cost(), Rect2(366, y + 234, 332, 52), _buy_research)
 	_update_ui()
+	_build_main_menu()
 
 func _add_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
 	var button := Button.new()
@@ -149,6 +152,95 @@ func _add_button(parent: Control, text_value: String, rect: Rect2, action: Calla
 	button.pressed.connect(action)
 	parent.add_child(button)
 	buttons.append(button)
+
+func _build_main_menu() -> void:
+	menu_overlay = Control.new()
+	menu_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ui_layer.add_child(menu_overlay)
+	var shade := ColorRect.new()
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.025, 0.018, 0.05, 0.96)
+	menu_overlay.add_child(shade)
+	var title := Label.new()
+	title.text = "CORE GUARDIAN\nDEMON LORD'S TOWER"
+	title.position = Vector2(35, 300)
+	title.size = Vector2(650, 125)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 40)
+	title.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48))
+	menu_overlay.add_child(title)
+	var subtitle := Label.new()
+	subtitle.text = "You are the Demon Lord. Protect the core.\nThe heroes must destroy it before they reach your throne."
+	subtitle.position = Vector2(45, 430)
+	subtitle.size = Vector2(630, 70)
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_size_override("font_size", 17)
+	subtitle.add_theme_color_override("font_color", Color(0.84, 0.79, 0.91))
+	menu_overlay.add_child(subtitle)
+	_add_menu_button(menu_overlay, "CONTINUE TOWER", Rect2(110, 545, 500, 70), _enter_tower)
+	_add_menu_button(menu_overlay, "NEW GAME", Rect2(110, 635, 500, 70), _confirm_new_game)
+	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 725, 500, 64), func(): get_tree().quit())
+
+func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
+	var button := Button.new()
+	button.text = text_value
+	button.position = rect.position
+	button.size = rect.size
+	button.add_theme_font_size_override("font_size", 22)
+	button.add_theme_color_override("font_color", Color(0.97, 0.94, 1.0))
+	button.add_theme_stylebox_override("normal", _button_style(Color(0.19, 0.10, 0.29)))
+	button.add_theme_stylebox_override("hover", _button_style(Color(0.34, 0.15, 0.40)))
+	button.add_theme_stylebox_override("pressed", _button_style(Color(0.45, 0.22, 0.34)))
+	button.pressed.connect(action)
+	parent.add_child(button)
+
+func _enter_tower() -> void:
+	menu_open = false
+	menu_overlay.visible = false
+	message = "Defend the core. Heroes approach from every direction."
+	message_clock = 3.0
+	_save_game()
+
+func _confirm_new_game() -> void:
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Start a new tower run?"
+	dialog.dialog_text = "This resets local campaign progress, research, guardians and resources."
+	ui_layer.add_child(dialog)
+	dialog.confirmed.connect(_new_game)
+	dialog.popup_centered()
+
+func _new_game() -> void:
+	floor_number = 1
+	wave_number = 1
+	core_hp = 100.0
+	core_max_hp = 100.0
+	core_damage = 12.0
+	core_evolution = "infernal"
+	attack_rate = 0.8
+	shield = 0.0
+	gold = 0
+	souls = 0
+	research_points = 0
+	research_level = 0
+	research_ranks = {"core_mastery": 0, "demonology": 0, "engineering": 0, "soul_alchemy": 0, "lordship": 0}
+	guardian_level = 1
+	guardian_count = 1
+	defeated = 0
+	lost = false
+	floor_cleared = false
+	campaign_won = false
+	enemies.clear()
+	shots.clear()
+	for path in [SAVE_PATH, SAVE_PATH + ".bak", SAVE_PATH + ".tmp"]:
+		if FileAccess.file_exists(path):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	_start_wave()
+	menu_open = false
+	menu_overlay.visible = false
+	_save_game()
+	_update_ui()
 
 func _button_style(color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
