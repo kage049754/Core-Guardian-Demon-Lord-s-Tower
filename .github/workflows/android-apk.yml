@@ -67,6 +67,19 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
+      - name: Diagnose Android export environment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -x "$JAVA_HOME/bin/java"
+          test -x "$ANDROID_HOME/platform-tools/adb"
+          test -d "$ANDROID_HOME/platforms/android-35"
+          test -x "$ANDROID_HOME/build-tools/35.0.1/aapt"
+          test -f "$GITHUB_WORKSPACE/android_debug.keystore"
+          ls -lah "$HOME/.local/share/godot/export_templates/4.4.1.stable"
+          cat "$HOME/.config/godot/editor_settings-4.tres"
+          godot --headless --editor --path . --quit --verbose
+
       - name: Validate project
         run: |
           godot --headless --editor --path . --quit
@@ -81,7 +94,7 @@ jobs:
           ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
         run: |
           mkdir -p build
-          godot --headless --path . --export-debug "Android" build/CoreGuardian.apk
+          godot --headless --verbose --path . --export-debug "Android" build/CoreGuardian.apk
 
       - name: Verify APK metadata and integrity
         run: |
