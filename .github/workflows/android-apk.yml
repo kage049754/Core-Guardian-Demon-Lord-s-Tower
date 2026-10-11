@@ -72,6 +72,9 @@ jobs:
           godot --headless --editor --path . --quit
           timeout 20s godot --headless --path . --quit-after 5
 
+      - name: Run gameplay smoke tests
+        run: godot --headless --path . --script res://tests/test_game.gd
+
       - name: Export Android APK
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
