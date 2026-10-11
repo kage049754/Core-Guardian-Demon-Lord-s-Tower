@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "relics": [
+    {
+      "id": "shard_of_the_first_demon",
+      "name": "Shard of the First Demon",
+      "rarity": "rare",
+      "effect": "Core damage +8%",
+      "unlock_floor": 10
+    },
+    {
+      "id": "healer_bane",
+      "name": "Healer's Bane",
+      "rarity": "uncommon",
+      "effect": "Hero healers take +15% damage",
+      "unlock_floor": 15
+    },
+    {
+      "id": "eternal_ember",
+      "name": "Eternal Ember",
+      "rarity": "rare",
+      "effect": "Burn damage lasts 25% longer",
+      "unlock_floor": 30
+    },
+    {
+      "id": "broken_halo",
+      "name": "Broken Halo",
+      "rarity": "epic",
+      "effect": "Shields absorb 10% more damage",
+      "unlock_floor": 50
+    },
+    {
+      "id": "dragon_heart",
+      "name": "Dragon Heart",
+      "rarity": "legendary",
+      "effect": "Boss rewards +12%",
+      "unlock_floor": 70
+    },
+    {
+      "id": "throne_key",
+      "name": "Throne Key",
+      "rarity": "mythic",
+      "effect": "Prestige seal rewards +1",
+      "unlock_floor": 100
+    }
+  ]
+}
