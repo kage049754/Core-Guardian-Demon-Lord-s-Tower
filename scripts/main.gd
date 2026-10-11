@@ -44,6 +44,9 @@ var core_evolution := "infernal"
 var attack_rate := 0.8
 var shield := 0.0
 var research_level := 0
+var demon_seals := 0
+var prestige_count := 0
+var prestige_button: Button
 var guardian_level := 1
 var guardian_count := 1
 var guardian_skill_clock := 0.0
@@ -129,6 +132,7 @@ func _build_ui() -> void:
 	status_label.add_theme_font_size_override("font_size", 16)
 	status_label.add_theme_color_override("font_color", Color(0.74, 0.84, 0.91))
 	root.add_child(status_label)
+	_add_button(root, "PAUSE / MENU", Rect2(22, 214, 160, 42), _open_main_menu)
 	var y := 980.0
 	_add_button(root, "UPGRADE CORE  ·  %s gold" % _upgrade_cost(), Rect2(22, y, 328, 72), _upgrade_core)
 	_add_button(root, "SUMMON GUARDIAN  ·  %s souls" % _summon_cost(), Rect2(366, y, 332, 72), _summon_guardian)
@@ -195,9 +199,11 @@ func _build_main_menu() -> void:
 	_add_menu_button(menu_overlay, "GUARDIANS & RELICS", Rect2(110, 650, 500, 60), _open_collection)
 	_add_menu_button(menu_overlay, "TOWER MAP", Rect2(110, 720, 500, 60), _open_tower_map)
 	_add_menu_button(menu_overlay, "SETTINGS", Rect2(110, 790, 500, 60), _open_settings)
-	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 860, 500, 60), func(): get_tree().quit())
+	prestige_button = _add_menu_button(menu_overlay, "PRESTIGE", Rect2(110, 860, 500, 55), _confirm_prestige)
+	prestige_button.disabled = true
+	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 925, 500, 55), func(): get_tree().quit())
 
-func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
+func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text_value
 	button.position = rect.position
@@ -209,6 +215,7 @@ func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: 
 	button.add_theme_stylebox_override("pressed", _button_style(Color(0.45, 0.22, 0.34)))
 	button.pressed.connect(action)
 	parent.add_child(button)
+	return button
 
 func _open_collection() -> void:
 	_show_menu_panel("GUARDIANS & RELICS")
@@ -302,6 +309,53 @@ func _set_reduced_effects(enabled: bool) -> void:
 	_save_game()
 	queue_redraw()
 
+func _open_main_menu() -> void:
+	menu_open = true
+	_save_game()
+	menu_overlay.visible = true
+	if prestige_button != null:
+		prestige_button.disabled = not (endless_mode and floor_number >= 120)
+
+func _confirm_prestige() -> void:
+	if not endless_mode or floor_number < 120:
+		return
+	var seals := 1 + int((floor_number - 100) / 20) + int(research_ranks.get("lordship", 0) / 5)
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Prestige the Demon Lord?"
+	dialog.dialog_text = "Gain %d Demon Seals. Floor, gold, souls, guardian levels and core upgrades reset. Permanent research, relics and collected guardians remain." % seals
+	ui_layer.add_child(dialog)
+	dialog.confirmed.connect(_perform_prestige)
+	dialog.popup_centered()
+
+func _perform_prestige() -> void:
+	if not endless_mode or floor_number < 120:
+		return
+	demon_seals += 1 + int((floor_number - 100) / 20) + int(research_ranks.get("lordship", 0) / 5)
+	prestige_count += 1
+	floor_number = 1
+	wave_number = 1
+	core_hp = 100.0
+	core_max_hp = 100.0
+	core_damage = 12.0
+	core_evolution = "infernal"
+	attack_rate = 0.8
+	shield = 0.0
+	gold = 0
+	souls = 0
+	guardian_level = 1
+	guardian_count = 1
+	lost = false
+	floor_cleared = false
+	campaign_won = false
+	endless_mode = false
+	_start_wave()
+	menu_open = false
+	menu_overlay.visible = false
+	message = "Prestige complete. Permanent research and relics remain."
+	message_clock = 4.0
+	_save_game()
+	_update_ui()
+
 func _enter_tower() -> void:
 	menu_open = false
 	menu_overlay.visible = false
@@ -330,6 +384,8 @@ func _new_game() -> void:
 	gold = 0
 	souls = 0
 	research_points = 0
+	demon_seals = 0
+	prestige_count = 0
 	relic_fragments = 0
 	unlocked_relics.clear()
 	research_level = 0
@@ -412,9 +468,11 @@ func _floor_definition() -> Dictionary:
 func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
+	if is_instance_valid(prestige_button):
+		prestige_button.disabled = not (endless_mode and floor_number >= 120)
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
 	var floor_label := "FLOOR %03d / 100" % floor_number if floor_number <= FLOOR_COUNT else "ENDLESS FLOOR %03d" % floor_number
-	hud_label.text = "%s  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d   FRAGMENTS %d" % [floor_label, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points, relic_fragments]
+	hud_label.text = "%s  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d   FRAGMENTS %d   SEALS %d" % [floor_label, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points, relic_fragments, demon_seals]
 	status_label.text = "%s  |  Core: %s  |  Guardians %d · Lv.%d  |  %s" % [region, core_evolution.capitalize(), guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
@@ -1015,6 +1073,8 @@ func _save_game() -> void:
 		"relic_fragments": relic_fragments,
 		"unlocked_relics": unlocked_relics,
 		"reduced_effects": reduced_effects,
+		"demon_seals": demon_seals,
+		"prestige_count": prestige_count,
 		"core_damage": core_damage,
 		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
@@ -1088,6 +1148,8 @@ func _load_game() -> void:
 	var saved_relics: Variant = data.get("unlocked_relics", [])
 	unlocked_relics = saved_relics if typeof(saved_relics) == TYPE_ARRAY else []
 	reduced_effects = bool(data.get("reduced_effects", false))
+	demon_seals = maxi(0, int(data.get("demon_seals", 0)))
+	prestige_count = maxi(0, int(data.get("prestige_count", 0)))
 	core_damage = maxf(1, float(data.get("core_damage", 12)))
 	core_evolution = str(data.get("core_evolution", "infernal"))
 	if not ["infernal", "abyssal", "soulbound"].has(core_evolution):
