@@ -462,7 +462,7 @@ func _start_wave() -> void:
 	enemy_spawn_limit = 3 + int(floor_number / 20)
 	if bool(_floor_definition().get("boss_floor", floor_number % 10 == 0)):
 		waves_per_floor = 1
-		enemy_spawn_limit = 1
+		enemy_spawn_limit = 4 if floor_number == 100 else 1
 	message = "Floor %d, wave %d/%d: invasion begins." % [floor_number, wave_number, waves_per_floor]
 	message_clock = 3.0
 
@@ -569,6 +569,8 @@ func _enemy_name(kind: int) -> String:
 func _spawn_enemy() -> void:
 	var boss := bool(_floor_definition().get("boss_floor", floor_number % 10 == 0))
 	var kind := 7 if boss else rng.randi_range(0, mini(7, int(floor_number / 12) + 2))
+	if floor_number == 100:
+		kind = [0, 2, 3, 4][wave_spawned % 4]
 	var scale := 1.0 + floor_number * 0.105
 	var hp := (75.0 + floor_number * 13.0) * scale
 	var speed := 17.0 + minf(12.0, floor_number * 0.08)
@@ -602,13 +604,18 @@ func _spawn_enemy() -> void:
 				hp *= 1.25
 				speed *= 0.92
 	if boss:
-		hp *= 9.0
-		speed *= 0.68
-		damage *= 3.2
+		if floor_number == 100:
+			hp *= 3.0
+			speed *= 0.85
+			damage *= 2.2
+		else:
+			hp *= 9.0
+			speed *= 0.68
+			damage *= 3.2
 	var angle := rng.randf_range(0.0, TAU)
 	var enemy := {
 		"kind": kind,
-		"name": str(_floor_definition().get("boss_name", "Floor %d Boss" % floor_number)) if boss else _enemy_name(kind),
+		"name": ["Legendary Warrior", "Grand Magister", "Field Medic", "Shadow Assassin"][wave_spawned % 4] if floor_number == 100 else (str(_floor_definition().get("boss_name", "Floor %d Boss" % floor_number)) if boss else _enemy_name(kind)),
 		"angle": angle,
 		"distance": 410.0,
 		"hp": hp,
