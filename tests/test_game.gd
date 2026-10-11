@@ -7,7 +7,8 @@ func _initialize() -> void:
 		["res://content/enemies.json", "archetypes", 8],
 		["res://content/research.json", "branches", 5],
 		["res://content/core_evolutions.json", "branches", 3],
-		["res://content/relics.json", "relics", 6]
+		["res://content/relics.json", "relics", 6],
+		["res://content/achievements.json", "achievements", 9]
 	]
 	for check in checks:
 		var file := FileAccess.open(check[0], FileAccess.READ)
@@ -48,5 +49,24 @@ func _initialize() -> void:
 			push_error("Floor definitions must be consecutive from 1 to 100.")
 			quit(1)
 			return
-	print("PASS: 100 ordered floors, 10 regions and bosses, guardians, enemy archetypes, research, evolutions and relic data.")
+	var required_art := [
+		"res://assets/characters/hero_atlas.svg",
+		"res://assets/characters/boss_atlas.svg",
+		"res://assets/environments/outer_gate.svg",
+		"res://assets/environments/bone_catacombs.svg",
+		"res://assets/environments/blighted_garden.svg",
+		"res://assets/environments/iron_foundry.svg",
+		"res://assets/environments/arcane_archive.svg",
+		"res://assets/environments/blood_moon_keep.svg",
+		"res://assets/environments/dragon_grave.svg",
+		"res://assets/environments/celestial_prison.svg",
+		"res://assets/environments/abyssal_rift.svg",
+		"res://assets/environments/throne_approach.svg"
+	]
+	for art_path in required_art:
+		if not FileAccess.file_exists(art_path):
+			push_error("Missing required original art asset: " + art_path)
+			quit(1)
+			return
+	print("PASS: 100 ordered floors, ten regions and bosses, guardians, enemies, research, evolutions, relics, achievements, boss art, hero art, and ten region backgrounds.")
 	quit(0)
