@@ -23,6 +23,26 @@ func run_tests() -> void:
 		_fail("Floor 10 milestone boss did not spawn.")
 		return
 
+	for floor_index in range(1, 101):
+		game.floor_number = floor_index
+		game._start_wave()
+		game._spawn_enemy()
+		if game.enemies.size() != 1:
+			_fail("Enemy spawn failed on floor %d." % floor_index)
+			return
+		var floor_enemy: Dictionary = game.enemies[0]
+		var should_be_boss := floor_index % 10 == 0
+		if bool(floor_enemy.get("boss", false)) != should_be_boss:
+			_fail("Unexpected boss status on floor %d." % floor_index)
+			return
+		if float(floor_enemy.get("hp", 0.0)) <= 0.0 or float(floor_enemy.get("speed", 0.0)) <= 0.0 or float(floor_enemy.get("damage", 0.0)) <= 0.0:
+			_fail("Invalid combat stats on floor %d." % floor_index)
+			return
+	game.enemies.clear()
+	game.floor_number = 10
+	game._start_wave()
+	game._spawn_enemy()
+
 	var boss_probe: Dictionary = {"name": "Boss Probe", "hp": 50.0, "max_hp": 100.0, "damage": 10.0, "distance": 200.0}
 	game.floor_number = 20
 	boss_probe = game._apply_boss_special(boss_probe)
