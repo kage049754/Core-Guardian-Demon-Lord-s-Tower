@@ -1114,6 +1114,18 @@ func _draw() -> void:
 		draw_circle(turret_pos, 15.0, Color(0.12, 0.08, 0.18))
 		draw_rect(Rect2(turret_pos - Vector2(9, 9), Vector2(18, 18)), Color(0.56, 0.34, 0.19))
 		draw_rect(Rect2(turret_pos - Vector2(5, 5), Vector2(10, 10)), Color(1.0, 0.68, 0.24))
+	# Summoned guardians orbit the core; their visual motion is cosmetic.
+	if hero_atlas != null:
+		for guardian_index in range(guardian_count):
+			var orbit_angle := game_clock * (0.42 + guardian_index * 0.035) + TAU * float(guardian_index) / maxf(1.0, float(guardian_count))
+			var orbit_radius := outer_radius * 0.30
+			var guardian_pos := center + Vector2(cos(orbit_angle), sin(orbit_angle)) * orbit_radius
+			var guardian_size := 19.0 + minf(7.0, guardian_level * 0.5)
+			var guardian_rect := Rect2(guardian_pos - Vector2(guardian_size, guardian_size), Vector2(guardian_size * 2.0, guardian_size * 2.0))
+			var guardian_source := Rect2(float((guardian_index % 5) * 100), 0, 100, 100)
+			if not reduced_effects:
+				draw_circle(guardian_pos, guardian_size + 6.0, Color(0.25, 0.85, 0.72, 0.16 + 0.05 * sin(game_clock * 3.0)))
+			draw_texture_rect_region(hero_atlas, guardian_rect, guardian_source, Color.WHITE, false, true)
 	# Rift Trap's inner rune ring marks the damaging zone.
 	draw_arc(center, outer_radius * 0.42, 0, TAU, 72, Color(0.95, 0.37, 0.25, 0.55), 2.0, true)
 	for trap_index in range(8):
