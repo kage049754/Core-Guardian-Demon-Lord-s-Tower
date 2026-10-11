@@ -335,7 +335,7 @@ func _check_achievements() -> void:
 			unlocked_achievements.append(achievement_id)
 			newly_unlocked.append(str(achievement.get("name", achievement_id)))
 	if not newly_unlocked.is_empty():
-		message = "Achievement unlocked: " + ", ".join(newly_unlocked)
+		message = "Achievement unlocked: " + ", ".join(PackedStringArray(newly_unlocked))
 		message_clock = 4.0
 		_save_game()
 
