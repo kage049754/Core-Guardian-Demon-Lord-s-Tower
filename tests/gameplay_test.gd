@@ -206,6 +206,9 @@ func run_tests() -> void:
 	if not game.campaign_won:
 		_fail("Clearing floor 100 did not complete the campaign.")
 		return
+	if not is_instance_valid(game.results_overlay):
+		_fail("Campaign victory did not show the results screen.")
+		return
 	game._next_floor()
 	if game.floor_number != 101 or not game.endless_mode or game.campaign_won:
 		_fail("Campaign completion did not unlock Endless Spire.")
