@@ -31,10 +31,22 @@ func _initialize() -> void:
 	var floor_data: Dictionary = JSON.parse_string(floor_file.get_as_text())
 	floor_file.close()
 	var floors: Array = floor_data["floors"]
+	if floor_data.get("regions", []).size() != 10:
+		push_error("Campaign must contain ten regions.")
+		quit(1)
+		return
+	var boss_count := 0
+	for floor_entry in floors:
+		if bool(floor_entry.get("boss_floor", false)):
+			boss_count += 1
+	if boss_count != 10:
+		push_error("Campaign must contain ten milestone bosses.")
+		quit(1)
+		return
 	for i in range(floors.size()):
 		if int(floors[i]["floor"]) != i + 1:
 			push_error("Floor definitions must be consecutive from 1 to 100.")
 			quit(1)
 			return
-	print("PASS: 100 floors, 10 milestone bosses, guardians, enemy archetypes, research, evolutions and relic data.")
+	print("PASS: 100 ordered floors, 10 regions and bosses, guardians, enemy archetypes, research, evolutions and relic data.")
 	quit(0)
