@@ -54,8 +54,9 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 
 ## Phase 4 — Floors 1–10 and progression
 
-- [ ] Data for all 100 floors, ten regions and ten milestone bosses exists, and the tower map is implemented. Full playable encounter testing for floors 1–10 remains open.
-- [x] Tower map supports selecting and replaying unlocked floors without reducing the highest unlocked floor; defeat retry and campaign-to-endless transitions are covered by automated tests. A dedicated results screen remains open.
+- [x] Data for all 100 floors, ten regions and ten milestone bosses exists; ten original region backgrounds are loaded by floor range, and the tower map is implemented. Full playable encounter testing for floors 1–10 remains open.
+- [x] Tower map supports selecting and replaying unlocked floors without reducing the highest unlocked floor; defeat retry and campaign-to-endless transitions are covered by automated tests.
+- [x] Dedicated results screens appear for core defeat, floor clear, and campaign victory; retry, replay, tower map, main menu, and Endless Spire actions are wired and covered by automated tests.
 - [ ] Add initial guardian collection and bestiary.
 - [ ] Test all floor links, boss conditions, rewards, and progression persistence.
 
@@ -118,13 +119,14 @@ For each scoped milestone:
 ## Current verified status
 
 - [x] Repository identified as `kage049754/Core-Guardian-Demon-Lord-s-Tower`, default branch `main`.
-- [x] Godot 4 project with battle scene, menu, HUD, tower map, collection/settings screens, and reduced-effects toggle.
-- [x] Data files define all 100 floors, ten regions, ten milestone bosses, five guardians, eight enemy archetypes, five research branches, three core evolution branches, six relics, and nine achievements.
-- [x] Core attacks, Soul Turrets, Rift Traps, role-based hero AI, multi-wave floors, ten distinct milestone boss mechanics, four-role Floor 100 invasion, three core evolutions, three-slot relic loadout, achievements, versioned local saves, capped offline rewards, endless survival, prestige, and unlocked-floor replay are implemented.
-- [x] Automated gameplay tests cover combat, boss mechanics, research, core evolution, save/load, offline reward boundaries and duplicate claims, relic loadout limits, achievement persistence, fresh-save reset, replay progress preservation, Floor 100 victory, and Endless Spire unlock.
-- [x] Godot validation passed on commit `32d59a75ec091317add9cf033caee36d9cb463a9`: [validation run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155895991).
-- [x] Android debug APK built and verified on commit `32d59a75ec091317add9cf033caee36d9cb463a9`: [build run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155895992), [artifact](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155895992/artifacts/11708358222). Package `com.coreguardian.demonlordstower`, version `0.1.0`, min SDK 21, target SDK 34, ARM64; ZIP/APK archive integrity passed. APK SHA-256: `e3acdbb033f99245d3940a402659661bc87ae25ffe2b04297fbfc8d0f003d125`.
+- [x] Godot 4 project with battle scene, main menu, HUD, tower map, collection/settings screens, achievement screen, results screens, and reduced-effects toggle.
+- [x] Content data defines all 100 floors, ten regions, ten milestone bosses, five guardians, eight enemy archetypes, five research branches, three core evolution branches, six relics, and nine achievements.
+- [x] Original 2D art includes eight hero sprites, ten milestone-boss sprites, orbiting guardian visuals, and ten region backgrounds.
+- [x] Core attacks, Soul Turrets, Rift Traps, role-based hero AI, multi-wave floors, three-phase bosses with distinct milestone mechanics, four-role Floor 100 invasion, three core evolutions, three-slot relic loadout, achievements, versioned local saves, capped offline rewards, endless survival, prestige, unlocked-floor replay, and result screens are implemented.
+- [x] Automated gameplay tests cover combat, boss mechanics/phases, progression, save/load and backup recovery, offline reward claim limits, relic loadouts, achievement persistence, fresh-save reset, and result screens.
+- [x] Godot validation passed on commit `0c3a9a806f407443c196d5657edffafb712a6e78`: [validation run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38156803773).
+- [x] Android debug APK built and verified on commit `0c3a9a806f407443c196d5657edffafb712a6e78`: [build run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38156803753), [artifact](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38156803753/artifacts/11709200618). Package `com.coreguardian.demonlordstower`, version `0.1.0`, min SDK 21, target SDK 34, ARM64; ZIP/APK archive integrity passed. APK SHA-256: `6914f25684e98fd7a42ccb6ac02eca6cb5ae51b8e0540b6420a37708f9ddff0e`.
 - [ ] Physical-device installation, launch, touch-control feel, performance, and gameplay testing have not been performed.
-- [ ] Full campaign balance/playthrough, unique multi-stage boss phases, expanded skill VFX/audio, save fault-injection, device performance profiling, and final release packaging remain incomplete.
+- [ ] Full campaign balance/playthrough, expanded skill VFX/audio, broader save fault-injection, device performance profiling, and final release packaging remain incomplete.
 
-**Current status:** The current debug APK is verified and automated progression tests pass. The full release remains in progress; continue remaining roadmap phases and do not claim physical-device verification.
+**Current status:** A verified debug APK and automated progression suite exist. This remains an active development build, not a final release. Continue the remaining roadmap phases; do not claim physical-device verification.
