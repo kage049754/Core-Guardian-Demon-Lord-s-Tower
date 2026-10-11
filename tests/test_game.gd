@@ -1,7 +1,7 @@
 extends SceneTree
 
 func _initialize() -> void:
-	call_deferred("run_checks")
+	run_checks()
 
 func run_checks() -> void:
 	var scene: PackedScene = load("res://scenes/main.tscn")
