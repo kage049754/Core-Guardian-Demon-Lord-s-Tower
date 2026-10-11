@@ -1,12 +1,15 @@
-extends Node
+extends SceneTree
 
-func _ready() -> void:
+func _initialize() -> void:
+	run_tests()
+
+func run_tests() -> void:
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	if packed == null:
 		_fail("Main battle scene could not be loaded.")
 		return
 	var game: Variant = packed.instantiate()
-	add_child(game)
+	root.add_child(game)
 	game._new_game()
 	if game.floor_number != 1 or game.core_hp <= 0:
 		_fail("New-game initialization failed.")
@@ -61,8 +64,8 @@ func _ready() -> void:
 
 	game._new_game()
 	print("PASS: new game, boss spawn, turret damage, shield absorption, core defeat, research, and core evolution.")
-	get_tree().quit(0)
+	quit(0)
 
 func _fail(reason: String) -> void:
 	push_error("GAMEPLAY TEST FAILED: " + reason)
-	get_tree().quit(1)
+	quit(1)
