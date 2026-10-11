@@ -43,6 +43,12 @@ func run_tests() -> void:
 		return
 	game.floor_number = 100
 	game.core_hp = 100.0
+	game.shield = 0.0
+	game.core_evolution = "infernal"
+	game.lost = false
+	game.floor_cleared = false
+	game.campaign_won = false
+	game.enemies.clear()
 	game.enemies.append(boss_probe.duplicate())
 	game.enemies.append(boss_probe.duplicate())
 	game._apply_boss_special(boss_probe)
