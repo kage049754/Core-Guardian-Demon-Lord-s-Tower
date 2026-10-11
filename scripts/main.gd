@@ -16,6 +16,7 @@ const ENEMY_NAMES := ["Vanguard", "Ranger", "Battle Mage", "Field Medic", "Shado
 const GUARDIAN_NAMES := ["Varkhan · Abyss Knight", "Nyxara · Soul Weaver", "Morveth · Bone Marksman", "Grum · Rune Golem", "Zippi · Chaos Imp"]
 
 var rng := RandomNumberGenerator.new()
+var floor_definitions: Array = []
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
@@ -55,6 +56,7 @@ var buttons: Array[Button] = []
 func _ready() -> void:
 	rng.randomize()
 	screen_size = get_viewport_rect().size
+	_load_floor_content()
 	_build_ui()
 	_load_game()
 	_start_wave()
@@ -135,10 +137,35 @@ func _button_style(color: Color) -> StyleBoxFlat:
 	style.content_margin_right = 8
 	return style
 
+
+func _load_floor_content() -> void:
+	var file := FileAccess.open("res://content/floors.json", FileAccess.READ)
+	if file == null:
+		push_warning("Floor content file is missing; using fallback floor scaling.")
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_warning("Floor content data is invalid; using fallback floor scaling.")
+		return
+	var data: Dictionary = parsed
+	var floors: Variant = data.get("floors", [])
+	if typeof(floors) == TYPE_ARRAY and floors.size() == FLOOR_COUNT:
+		floor_definitions = floors
+	else:
+		push_warning("Expected 100 floor definitions; using fallback floor scaling.")
+
+func _floor_definition() -> Dictionary:
+	var index := clampi(floor_number - 1, 0, floor_definitions.size() - 1)
+	if floor_definitions.is_empty():
+		return {}
+	var value: Variant = floor_definitions[index]
+	return value if typeof(value) == TYPE_DICTIONARY else {}
+
 func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
-	var region: String = str(REGION_NAMES[mini(9, int((floor_number - 1) / 10))])
+	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
 	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, wave_limit, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
 	status_label.text = "%s  |  Guardians Lv.%d  |  %s" % [region, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
@@ -224,7 +251,7 @@ func _update_combat(delta: float) -> void:
 		_complete_wave()
 
 func _spawn_enemy() -> void:
-	var boss := floor_number % 10 == 0
+	var boss := bool(_floor_definition().get("boss_floor", floor_number % 10 == 0))
 	var kind := 7 if boss else rng.randi_range(0, mini(7, int(floor_number / 12) + 2))
 	var scale := 1.0 + floor_number * 0.105
 	var hp := (75.0 + floor_number * 13.0) * scale
@@ -237,7 +264,7 @@ func _spawn_enemy() -> void:
 	var angle := rng.randf_range(0.0, TAU)
 	var enemy := {
 		"kind": kind,
-		"name": "Floor %d Boss" % floor_number if boss else ENEMY_NAMES[kind],
+		"name": str(_floor_definition().get("boss_name", "Floor %d Boss" % floor_number)) if boss else ENEMY_NAMES[kind],
 		"angle": angle,
 		"distance": 410.0,
 		"hp": hp,
