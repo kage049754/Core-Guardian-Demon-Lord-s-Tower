@@ -9,3 +9,4 @@ dist/
 *.jks
 *.p12
 *.tmp
+android_debug.keystore
