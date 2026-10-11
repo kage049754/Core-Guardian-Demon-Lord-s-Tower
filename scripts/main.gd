@@ -121,7 +121,7 @@ func _build_ui() -> void:
 	_add_button(root, "EMERGENCY SHIELD", Rect2(22, y + 82, 328, 72), _cast_shield)
 	_add_button(root, "RESEARCH  ·  %s gold" % _research_cost(), Rect2(366, y + 82, 332, 72), _buy_research)
 	_add_button(root, "NEXT FLOOR / RETRY", Rect2(22, y + 164, 676, 60), _next_floor)
-	_add_button(root, "EVOLVE CORE · 3 research", Rect2(22, y + 234, 328, 52), _evolve_core)
+	_add_button(root, "EVOLVE CORE  ·  3 research", Rect2(22, y + 234, 328, 52), _evolve_core)
 	_add_button(root, "RESET SAVE", Rect2(366, y + 234, 332, 52), _reset_save)
 	_update_ui()
 
@@ -404,7 +404,10 @@ func _core_attack() -> void:
 			best_distance = d
 			target_index = i
 	var target: Dictionary = enemies[target_index]
-	target["hp"] = float(target["hp"]) - (core_damage + research_level * 2.5)
+	var damage := core_damage + research_level * 2.5
+	if core_evolution == "infernal":
+		damage *= 1.25
+	target["hp"] = float(target["hp"]) - damage
 	enemies[target_index] = target
 	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.16, "color": Color(0.65, 0.35, 1.0)})
 
