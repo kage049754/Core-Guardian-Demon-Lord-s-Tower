@@ -9,7 +9,7 @@ func run_checks() -> void:
 		push_error("main scene could not be loaded")
 		quit(1)
 		return
-	var game: Node = scene.instantiate()
+	var game: Variant = scene.instantiate()
 	root.add_child(game)
 	await process_frame
 	if game.floor_number != 1 or game.core_hp <= 0.0:
