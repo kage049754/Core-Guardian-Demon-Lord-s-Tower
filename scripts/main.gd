@@ -535,13 +535,13 @@ func _load_game() -> void:
 	gold += reward
 	if reward > 0:
 		offline_summary = "Offline reward: %d gold for %d minutes." % [reward, int(elapsed / 60)]
+	# A loaded session starts a fresh wave; combat is never simulated while offline.
+	_start_wave()
+	if reward > 0:
 		message = offline_summary
 		message_clock = 8.0
-	# A loaded session starts a fresh wave; combat is never simulated while offline.
-	lost = false
-	floor_cleared = false
-	campaign_won = false
-	_start_wave()
+	# Immediately persist the new timestamp so reopening cannot claim the same interval again.
+	_save_game()
 
 func _reset_save() -> void:
 	var dialog := ConfirmationDialog.new()
