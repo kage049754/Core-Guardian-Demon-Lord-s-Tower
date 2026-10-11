@@ -88,6 +88,9 @@ jobs:
       - name: Validate game content data
         run: timeout 30s godot --headless --path . --script res://tests/test_game.gd
 
+      - name: Run gameplay integration tests
+        run: timeout 30s godot --headless --path . res://tests/gameplay_test.tscn
+
       - name: Export Android APK
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
