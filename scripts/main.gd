@@ -37,6 +37,8 @@ var attack_rate := 0.8
 var shield := 0.0
 var research_level := 0
 var guardian_level := 1
+var guardian_count := 1
+var guardian_skill_clock := 0.0
 var defeated := 0
 var wave_spawned := 0
 var spawn_clock := 0.0
@@ -194,7 +196,7 @@ func _update_ui() -> void:
 		return
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
 	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
-	status_label.text = "%s  |  Guardians Lv.%d  |  %s" % [region, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
+	status_label.text = "%s  |  Guardians %d · Lv.%d  |  %s" % [region, guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
 	elif floor_cleared:
@@ -222,7 +224,7 @@ func _upgrade_cost() -> int:
 	return 25 + int(core_damage * 2.0) + floor_number * 3
 
 func _summon_cost() -> int:
-	return 4 + guardian_level * 2
+	return 4 + guardian_count * 3 + guardian_level * 2
 
 func _research_cost() -> int:
 	return 40 + research_level * 30
@@ -403,17 +405,56 @@ func _core_attack() -> void:
 	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.16, "color": Color(0.65, 0.35, 1.0)})
 
 func _guardian_attack() -> void:
-	if enemies.is_empty() or guardian_level <= 0:
+	if enemies.is_empty() or guardian_count <= 0:
 		return
-	var count := mini(guardian_level, 3)
-	for n in range(count):
+	guardian_skill_clock += 1.0
+	for guardian_index in range(guardian_count):
 		if enemies.is_empty():
 			break
-		var index := rng.randi_range(0, enemies.size() - 1)
-		var enemy: Dictionary = enemies[index]
-		enemy["hp"] = float(enemy["hp"]) - 5.0 * guardian_level
-		enemies[index] = enemy
-		shots.append({"angle": float(enemy["angle"]), "distance": float(enemy["distance"]), "life": 0.13, "color": Color(0.2, 0.92, 0.78)})
+		var guardian_kind := guardian_index % 5
+		var target_index := -1
+		var closest_distance := INF
+		# Morveth prioritizes enemy support roles; Varkhan and Grum protect the frontline.
+		for enemy_index in range(enemies.size()):
+			var candidate: Dictionary = enemies[enemy_index]
+			var candidate_kind := int(candidate["kind"])
+			var preferred := guardian_kind == 2 and (candidate_kind == 3 or candidate_kind == 2)
+			var distance_value := float(candidate["distance"]) - (10000.0 if preferred else 0.0)
+			if distance_value < closest_distance:
+				closest_distance = distance_value
+				target_index = enemy_index
+		if target_index < 0:
+			continue
+		var enemy: Dictionary = enemies[target_index]
+		var damage := 7.0 * guardian_level
+		match guardian_kind:
+			0: # Varkhan: heavy frontline strike.
+				damage = 14.0 * guardian_level
+			1: # Nyxara: chained soul bolts.
+				damage = 9.0 * guardian_level
+			2: # Morveth: precise execution shot.
+				damage = 18.0 * guardian_level
+				if int(enemy["kind"]) == 2 or int(enemy["kind"]) == 3:
+					damage *= 1.6
+			3: # Grum: defensive support.
+				damage = 5.0 * guardian_level
+				if int(guardian_skill_clock) % 3 == 0:
+					shield += 3.0 * guardian_level
+			4: # Zippi: rapid chaotic fire.
+				damage = 6.0 * guardian_level
+		enemy["hp"] = float(enemy["hp"]) - damage
+		enemies[target_index] = enemy
+		shots.append({"angle": float(enemy["angle"]), "distance": float(enemy["distance"]), "life": 0.15, "color": Color(0.2, 0.92, 0.78)})
+		if guardian_kind == 1 and enemies.size() > 1:
+			var chain_index := (target_index + 1) % enemies.size()
+			var chained: Dictionary = enemies[chain_index]
+			chained["hp"] = float(chained["hp"]) - 3.0 * guardian_level
+			enemies[chain_index] = chained
+		if guardian_kind == 4 and enemies.size() > 1:
+			var second_index := rng.randi_range(0, enemies.size() - 1)
+			var second: Dictionary = enemies[second_index]
+			second["hp"] = float(second["hp"]) - 3.0 * guardian_level
+			enemies[second_index] = second
 
 func _damage_core(amount: float) -> void:
 	var absorbed := minf(shield, amount)
@@ -481,8 +522,15 @@ func _summon_guardian() -> void:
 	if souls < cost or (lost and not campaign_won):
 		return
 	souls -= cost
-	guardian_level += 1
-	message = "%s strengthened to level %d." % [GUARDIAN_NAMES[(guardian_level - 1) % GUARDIAN_NAMES.size()], guardian_level]
+	if guardian_count < mini(5, maxi(1, guardian_definitions.size())):
+		guardian_count += 1
+		var new_name := GUARDIAN_NAMES[(guardian_count - 1) % GUARDIAN_NAMES.size()]
+		if guardian_count - 1 < guardian_definitions.size():
+			new_name = str(guardian_definitions[guardian_count - 1].get("name", new_name))
+		message = "%s joined your defense." % new_name
+	else:
+		guardian_level += 1
+		message = "All guardians strengthened to level %d." % guardian_level
 	message_clock = 2.5
 
 func _cast_shield() -> void:
@@ -626,6 +674,7 @@ func _save_game() -> void:
 		"attack_rate": attack_rate,
 		"research_level": research_level,
 		"guardian_level": guardian_level,
+		"guardian_count": guardian_count,
 		"defeated": defeated,
 		"lost": lost,
 		"floor_cleared": floor_cleared,
@@ -675,6 +724,7 @@ func _load_game() -> void:
 	attack_rate = maxf(0.1, float(data.get("attack_rate", 0.8)))
 	research_level = maxi(0, int(data.get("research_level", 0)))
 	guardian_level = maxi(1, int(data.get("guardian_level", 1)))
+	guardian_count = clampi(int(data.get("guardian_count", 1)), 1, 5)
 	defeated = maxi(0, int(data.get("defeated", 0)))
 	lost = bool(data.get("lost", false))
 	floor_cleared = bool(data.get("floor_cleared", false))
