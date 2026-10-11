@@ -70,17 +70,17 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 - [x] Combat does not advance while the app is closed.
 - [x] Save a new timestamp immediately after calculating offline rewards; additional exploit and boundary tests remain open.
 - [x] Implement prestige eligibility at endless floor 120, a reset preview, Demon Seals, and retention of permanent research/relics.
-- [ ] Test force-stop/reopen, migrations, interrupted writes, offline time boundaries, and defeat persistence.
+- [x] Automated tests cover save/load restoration, two-minute offline earnings, duplicate-claim prevention, and achievement persistence. Force-stop/reopen on a physical device, save fault-injection, migration edge cases, and defeat persistence remain open.
 
 **Exit gate:** progress survives app restarts, offline rewards are bounded and claimable once, and permanent progression survives defeat.
 
 ## Phase 6 — Full 100-floor campaign
 
 - [x] Define all 100 campaign floors, ten regions and ten boss milestones in data. Unique encounters and region-specific environments remain open.
-- [ ] Implement all milestone bosses and their distinct phases/mechanics.
+- [x] Implement distinct combat mechanics for all ten milestone bosses and add automated checks for representative healing, shield dispel, displacement, and coordinated-party attacks. Unique multi-stage phases and full balance tuning remain open.
 - [ ] Expand original guardian, enemy, skill, relic, and evolution roster.
 - [ ] Implement Infernal, Abyssal, and Soulbound Core paths.
-- [ ] Implement relic loadouts, achievements, and permanent unlocks.
+- [x] Implement a three-slot equipped relic loadout, permanent achievement definitions, unlock tracking, and local-save persistence. Additional achievements and balance tuning remain open.
 - [ ] Floor 100 spawns a four-role Legendary Hero Party with boss telegraphs; authored multi-stage party mechanics remain open.
 - [x] Unlock endless floors after the 100-floor campaign and support milestone bosses every tenth endless floor.
 - [ ] Validate every floor's data, progression path, rewards, and completion conditions.
@@ -118,12 +118,13 @@ For each scoped milestone:
 ## Current verified status
 
 - [x] Repository identified as `kage049754/Core-Guardian-Demon-Lord-s-Tower`, default branch `main`.
-- [x] Godot 4 project, main battle scene, menu, battle HUD, tower map, collection, settings and reduced-effects toggle are committed.
-- [x] Data files define all 100 floors, ten regions, ten milestone bosses, five guardians, eight enemy archetypes, five research branches, three core evolution branches and six relics.
-- [x] Core attacks, upgradeable Soul Turret and Rift Trap, guardian attacks, role-based hero behavior, multi-wave floors, boss telegraphs, four-hero Floor 100 invasion, core evolutions, relic collection, endless mode and prestige are implemented in code.
-- [x] Godot validation passed on commit `1ca22bfba54edd7ceb1158774d34b2a052b66513`: [validation run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537575).
-- [x] Android debug APK built and verified on commit `1ca22bfba54edd7ceb1158774d34b2a052b66513`: [build run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513), [artifact](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513/artifacts/11707433601). Package `com.coreguardian.demonlordstower`, version `0.1.0`, min SDK 21, target SDK 34, ARM64; APK archive integrity passed.
-- [ ] Physical-device installation, launch, and gameplay testing have not been performed.
-- [ ] Combat-specific automated tests, save fault-injection tests, full 100-floor balance/playthrough, unique boss mechanics, all planned guardian animations, relic loadouts/achievements, and device performance profiling remain incomplete.
+- [x] Godot 4 project with battle scene, menu, HUD, tower map, collection/settings screens, and reduced-effects toggle.
+- [x] Data files define all 100 floors, ten regions, ten milestone bosses, five guardians, eight enemy archetypes, five research branches, three core evolution branches, six relics, and nine achievements.
+- [x] Core attacks, Soul Turrets, Rift Traps, guardian attacks, role-based hero AI, multi-wave floors, boss telegraphs and distinct milestone mechanics, four-role Floor 100 invasion, core evolutions, relic collection/loadout, achievements, endless mode, and prestige are implemented.
+- [x] Automated gameplay tests cover startup, boss spawning and mechanics, turret damage, shield absorption, core defeat, research, evolution, save/load, offline reward boundaries and duplicate claims, relic loadout limits, achievement persistence, and fresh-save relic reset.
+- [x] Godot validation passed on commit `29d1d7be55ad328468b172e0bd356f0547608a0a`: [validation run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155331501).
+- [x] Android debug APK built and downloaded from [build run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155331448); [artifact](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38155331448/artifacts/11708197491). Package `com.coreguardian.demonlordstower`, version `0.1.0`, min SDK 21, target SDK 34, ARM64; ZIP/APK archive integrity passed. APK SHA-256: `b33476e83a570afbdf0de236174e0f0efa2693616389973a44f9e95214ab1b6b`.
+- [ ] Physical-device installation, launch, touch-control feel, performance, and gameplay testing have not been performed.
+- [ ] Full campaign balance/playthrough, unique multi-stage boss phases, expanded guardian animations and skill effects, save fault-injection, device performance profiling, and final release packaging remain incomplete.
 
-**Current status:** A verified debug APK exists, but the complete game and all roadmap exit gates are not done. Keep implementing and testing; do not mark Phase 0, Phase 1 or the final release complete until their full exit gates pass.
+**Current status:** A verified debug APK exists and the automated gameplay suite passes. This is not yet the complete release; continue implementing the remaining roadmap phases and do not claim physical-device verification.
