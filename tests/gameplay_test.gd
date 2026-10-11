@@ -56,6 +56,18 @@ func run_tests() -> void:
 		_fail("Legendary Hero Party did not coordinate its attack.")
 		return
 
+	var phase_probe: Dictionary = {"name": "Phase Test", "hp": 50.0, "max_hp": 100.0, "speed": 10.0, "damage": 10.0, "phase": 1}
+	phase_probe = game._update_boss_phase(phase_probe)
+	if int(phase_probe["phase"]) != 2 or float(phase_probe["speed"]) <= 10.0:
+		_fail("Boss did not enter Phase II at half health.")
+		return
+	phase_probe["hp"] = 25.0
+	var phase_two_speed: float = float(phase_probe["speed"])
+	phase_probe = game._update_boss_phase(phase_probe)
+	if int(phase_probe["phase"]) != 3 or float(phase_probe["speed"]) <= phase_two_speed:
+		_fail("Boss did not enter its final phase at low health.")
+		return
+
 	game.enemies.clear()
 	game.floor_number = 1
 	game._start_wave()
