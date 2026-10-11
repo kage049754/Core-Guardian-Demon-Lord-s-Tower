@@ -158,6 +158,16 @@ func run_tests() -> void:
 		_fail("Achievement progress did not persist to the local save.")
 		return
 
+	game.highest_floor_unlocked = 3
+	game._select_floor(2)
+	if game.floor_number != 2 or game.highest_floor_unlocked != 3:
+		_fail("Tower map replay did not preserve the highest unlocked floor.")
+		return
+	game._select_floor(1)
+	if game.floor_number != 1 or game.highest_floor_unlocked != 3:
+		_fail("Replaying an earlier floor reduced campaign unlock progress.")
+		return
+
 	game._new_game()
 	if not game.equipped_relics.is_empty() or not game.unlocked_relics.is_empty():
 		_fail("Fresh game retained relics from the previous save.")
