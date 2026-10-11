@@ -495,6 +495,7 @@ func _new_game() -> void:
 	prestige_count = 0
 	relic_fragments = 0
 	unlocked_relics.clear()
+	equipped_relics.clear()
 	research_level = 0
 	research_ranks = {"core_mastery": 0, "demonology": 0, "engineering": 0, "soul_alchemy": 0, "lordship": 0}
 	guardian_level = 1
