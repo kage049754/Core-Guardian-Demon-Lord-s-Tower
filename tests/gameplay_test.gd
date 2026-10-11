@@ -91,6 +91,9 @@ func run_tests() -> void:
 	if not game.lost or game.core_hp != 0.0:
 		_fail("Core destruction did not trigger defeat.")
 		return
+	if not is_instance_valid(game.results_overlay):
+		_fail("Core destruction did not show the defeat results screen.")
+		return
 
 	game.lost = false
 	game.gold = 1000
