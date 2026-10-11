@@ -60,6 +60,8 @@ var ui_layer: CanvasLayer
 var hud_label: Label
 var status_label: Label
 var buttons: Array[Button] = []
+var research_selector: OptionButton
+var research_ranks: Dictionary = {"core_mastery": 0, "demonology": 0, "engineering": 0, "soul_alchemy": 0, "lordship": 0}
 
 func _ready() -> void:
 	rng.randomize()
@@ -119,10 +121,18 @@ func _build_ui() -> void:
 	_add_button(root, "UPGRADE CORE  ·  %s gold" % _upgrade_cost(), Rect2(22, y, 328, 72), _upgrade_core)
 	_add_button(root, "SUMMON GUARDIAN  ·  %s souls" % _summon_cost(), Rect2(366, y, 332, 72), _summon_guardian)
 	_add_button(root, "EMERGENCY SHIELD", Rect2(22, y + 82, 328, 72), _cast_shield)
-	_add_button(root, "RESEARCH  ·  %s gold" % _research_cost(), Rect2(366, y + 82, 332, 72), _buy_research)
+	research_selector = OptionButton.new()
+	research_selector.position = Vector2(366, y + 82)
+	research_selector.size = Vector2(332, 72)
+	research_selector.add_theme_font_size_override("font_size", 17)
+	research_selector.add_theme_stylebox_override("normal", _button_style(Color(0.19, 0.10, 0.29)))
+	for branch_name in ["Core Mastery", "Demonology", "Engineering", "Soul Alchemy", "Lordship"]:
+		research_selector.add_item(branch_name)
+	research_selector.item_selected.connect(_on_research_branch_selected)
+	root.add_child(research_selector)
 	_add_button(root, "NEXT FLOOR / RETRY", Rect2(22, y + 164, 676, 60), _next_floor)
 	_add_button(root, "EVOLVE CORE  ·  3 research", Rect2(22, y + 234, 328, 52), _evolve_core)
-	_add_button(root, "RESET SAVE", Rect2(366, y + 234, 332, 52), _reset_save)
+	_add_button(root, "BUY RESEARCH  ·  %d gold / 1 point" % _research_cost(), Rect2(366, y + 234, 332, 52), _buy_research)
 	_update_ui()
 
 func _add_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
@@ -214,9 +224,9 @@ func _update_ui() -> void:
 			"SUMMON GUARDIAN":
 				button.text = "SUMMON GUARDIAN  ·  %d souls" % _summon_cost()
 				button.disabled = souls < _summon_cost() or lost or campaign_won
-			"RESEARCH":
-				button.text = "RESEARCH  ·  %d gold" % _research_cost()
-				button.disabled = gold < _research_cost()
+			"BUY RESEARCH":
+				button.text = "BUY RESEARCH  ·  %d gold / 1 point" % _research_cost()
+				button.disabled = gold < _research_cost() or research_points < 1
 			"EVOLVE CORE":
 				button.text = "EVOLVE CORE · 3 research"
 				button.disabled = research_points < 3 or lost or campaign_won
@@ -568,18 +578,40 @@ func _cast_shield() -> void:
 		return
 	shield += 35.0 + research_level * 5.0
 	skill_ready = false
-	skill_cooldown = 20.0
+	skill_cooldown = maxf(8.0, 20.0 - float(research_ranks.get("lordship", 0)) * 1.5)
 	message = "Emergency Shield absorbed incoming damage."
 	message_clock = 2.0
 
+func _on_research_branch_selected(index: int) -> void:
+	if research_selector != null:
+		research_selector.select(clampi(index, 0, 4))
+
 func _buy_research() -> void:
 	var cost := _research_cost()
-	if gold < cost:
+	if gold < cost or research_points < 1:
+		message = "Research requires %d gold and 1 research point." % cost
+		message_clock = 2.0
 		return
 	gold -= cost
+	research_points -= 1
+	var branch_id := ["core_mastery", "demonology", "engineering", "soul_alchemy", "lordship"][clampi(research_selector.selected, 0, 4)]
+	research_ranks[branch_id] = int(research_ranks.get(branch_id, 0)) + 1
 	research_level += 1
-	research_points += 1
-	message = "Permanent research improved. Its combat bonus persists after defeat."
+	match branch_id:
+		"core_mastery":
+			core_max_hp += 10.0
+			core_hp = minf(core_max_hp, core_hp + 10.0)
+			core_damage += 1.5
+		"demonology":
+			guardian_level += 1
+		"engineering":
+			attack_rate += 0.08
+		"soul_alchemy":
+			# Offline time stays capped; research improves gold per offline minute.
+			gold += 0
+		"lordship":
+			skill_cooldown = maxf(0.0, skill_cooldown - 2.0)
+	message = "%s research advanced to rank %d." % [branch_id.replace("_", " ").capitalize(), research_ranks[branch_id]]
 	message_clock = 2.5
 	_save_game()
 
@@ -704,6 +736,7 @@ func _save_game() -> void:
 		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
 		"research_level": research_level,
+		"research_ranks": research_ranks,
 		"guardian_level": guardian_level,
 		"guardian_count": guardian_count,
 		"defeated": defeated,
@@ -757,6 +790,9 @@ func _load_game() -> void:
 		core_evolution = "infernal"
 	attack_rate = maxf(0.1, float(data.get("attack_rate", 0.8)))
 	research_level = maxi(0, int(data.get("research_level", 0)))
+	var saved_research: Variant = data.get("research_ranks", research_ranks)
+	if typeof(saved_research) == TYPE_DICTIONARY:
+		research_ranks = saved_research
 	guardian_level = maxi(1, int(data.get("guardian_level", 1)))
 	guardian_count = clampi(int(data.get("guardian_count", 1)), 1, 5)
 	defeated = maxi(0, int(data.get("defeated", 0)))
