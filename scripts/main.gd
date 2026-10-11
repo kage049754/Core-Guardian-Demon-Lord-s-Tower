@@ -320,6 +320,8 @@ func _open_settings() -> void:
 
 func _show_menu_panel(panel_title: String) -> void:
 	menu_overlay.visible = false
+	if is_instance_valid(collection_overlay):
+		collection_overlay.queue_free()
 	collection_overlay = Control.new()
 	collection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui_layer.add_child(collection_overlay)
