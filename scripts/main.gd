@@ -22,6 +22,7 @@ var background_art: Texture2D
 var floor_definitions: Array = []
 var guardian_definitions: Array = []
 var enemy_definitions: Array = []
+var research_definitions: Array = []
 var relic_definitions: Array = []
 var unlocked_relics: Array = []
 var relic_fragments := 0
@@ -79,6 +80,7 @@ func _ready() -> void:
 	_load_floor_content()
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
 	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
+	research_definitions = _load_content_array("res://content/research.json", "branches")
 	relic_definitions = _load_content_array("res://content/relics.json", "relics")
 	_build_ui()
 	_load_game()
@@ -135,8 +137,10 @@ func _build_ui() -> void:
 	research_selector.size = Vector2(332, 72)
 	research_selector.add_theme_font_size_override("font_size", 17)
 	research_selector.add_theme_stylebox_override("normal", _button_style(Color(0.19, 0.10, 0.29)))
-	for branch_name in ["Core Mastery", "Demonology", "Engineering", "Soul Alchemy", "Lordship"]:
-		research_selector.add_item(branch_name)
+	for branch in research_definitions:
+		research_selector.add_item(str(branch.get("name", "Research")))
+	if research_selector.item_count > 0:
+		research_selector.select(0)
 	research_selector.item_selected.connect(_on_research_branch_selected)
 	root.add_child(research_selector)
 	_add_button(root, "NEXT FLOOR / RETRY", Rect2(22, y + 164, 676, 60), _next_floor)
@@ -541,6 +545,11 @@ func _update_combat(delta: float) -> void:
 	if wave_spawned >= enemy_spawn_limit and enemies.is_empty():
 		_complete_wave()
 
+func _enemy_name(kind: int) -> String:
+	if kind >= 0 and kind < enemy_definitions.size():
+		return str(enemy_definitions[kind].get("name", ENEMY_NAMES[clampi(kind, 0, ENEMY_NAMES.size() - 1)]))
+	return ENEMY_NAMES[clampi(kind, 0, ENEMY_NAMES.size() - 1)]
+
 func _spawn_enemy() -> void:
 	var boss := bool(_floor_definition().get("boss_floor", floor_number % 10 == 0))
 	var kind := 7 if boss else rng.randi_range(0, mini(7, int(floor_number / 12) + 2))
@@ -583,7 +592,7 @@ func _spawn_enemy() -> void:
 	var angle := rng.randf_range(0.0, TAU)
 	var enemy := {
 		"kind": kind,
-		"name": str(_floor_definition().get("boss_name", "Floor %d Boss" % floor_number)) if boss else ENEMY_NAMES[kind],
+		"name": str(_floor_definition().get("boss_name", "Floor %d Boss" % floor_number)) if boss else _enemy_name(kind),
 		"angle": angle,
 		"distance": 410.0,
 		"hp": hp,
@@ -809,7 +818,10 @@ func _buy_research() -> void:
 		return
 	gold -= cost
 	research_points -= 1
-	var branch_id := ["core_mastery", "demonology", "engineering", "soul_alchemy", "lordship"][clampi(research_selector.selected, 0, 4)]
+	var branch_id := "core_mastery"
+	if not research_definitions.is_empty():
+		var branch_data: Dictionary = research_definitions[clampi(research_selector.selected, 0, research_definitions.size() - 1)]
+		branch_id = str(branch_data.get("id", branch_id))
 	research_ranks[branch_id] = int(research_ranks.get(branch_id, 0)) + 1
 	research_level += 1
 	match branch_id:
@@ -869,6 +881,14 @@ func _draw() -> void:
 	var viewport := get_viewport_rect().size
 	if background_art != null:
 		draw_texture_rect(background_art, Rect2(Vector2.ZERO, viewport), false, Color.WHITE)
+	var region_tints := [
+		Color(0.20, 0.08, 0.25, 0.10), Color(0.08, 0.12, 0.22, 0.14),
+		Color(0.06, 0.20, 0.14, 0.12), Color(0.22, 0.13, 0.06, 0.12),
+		Color(0.13, 0.09, 0.25, 0.14), Color(0.25, 0.05, 0.13, 0.12),
+		Color(0.25, 0.08, 0.03, 0.13), Color(0.08, 0.14, 0.25, 0.14),
+		Color(0.10, 0.02, 0.19, 0.16), Color(0.16, 0.03, 0.08, 0.14)
+	]
+	draw_rect(Rect2(Vector2.ZERO, viewport), region_tints[mini(9, int((floor_number - 1) / 10))], false)
 	var center := Vector2(viewport.x * 0.5, viewport.y * 0.49)
 	var outer_radius := minf(viewport.x * 0.46, viewport.y * 0.32)
 	draw_circle(center, outer_radius + 24, Color(0.10, 0.05, 0.15, 0.75))
