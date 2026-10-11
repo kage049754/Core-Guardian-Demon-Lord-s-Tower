@@ -36,6 +36,7 @@ var reduced_effects := false
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
+var highest_floor_unlocked := 1
 var wave_number := 1
 var waves_per_floor := 4
 var enemy_spawn_limit := 3
@@ -350,15 +351,38 @@ func _open_tower_map() -> void:
 	scroll.add_child(list)
 	for floor_data in floor_definitions:
 		var n := int(floor_data.get("floor", 1))
-		var status := "CLEARED" if n < floor_number else ("CURRENT" if n == floor_number else "LOCKED")
+		var status := "CURRENT" if n == floor_number else ("CLEARED" if n < highest_floor_unlocked else ("AVAILABLE" if n <= highest_floor_unlocked else "LOCKED"))
 		var boss_text := "  ·  BOSS: " + str(floor_data.get("boss_name", "")) if bool(floor_data.get("boss_floor", false)) else ""
-		var row := Label.new()
+		var row := Button.new()
 		row.text = "FLOOR %03d  ·  %s  ·  %s%s" % [n, str(floor_data.get("region", "Unknown Region")), status, boss_text]
-		row.custom_minimum_size = Vector2(610, 38)
+		row.custom_minimum_size = Vector2(610, 42)
 		row.add_theme_font_size_override("font_size", 15)
 		row.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48) if status == "CURRENT" else Color(0.75, 0.72, 0.83))
+		row.disabled = n > highest_floor_unlocked
+		row.pressed.connect(func(): _select_floor(n))
 		list.add_child(row)
 	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+
+func _select_floor(target_floor: int) -> void:
+	if target_floor < 1 or target_floor > highest_floor_unlocked:
+		return
+	floor_number = target_floor
+	wave_number = 1
+	endless_mode = target_floor > FLOOR_COUNT
+	lost = false
+	floor_cleared = false
+	campaign_won = false
+	core_hp = maxf(35.0, core_max_hp * 0.65) if core_hp <= 0.0 else minf(core_max_hp, core_hp + core_max_hp * 0.35)
+	enemies.clear()
+	shots.clear()
+	_start_wave()
+	menu_open = false
+	if is_instance_valid(collection_overlay):
+		collection_overlay.queue_free()
+	menu_overlay.visible = false
+	_save_game()
+	_update_ui()
 
 func _open_settings() -> void:
 	_show_menu_panel("SETTINGS")
@@ -480,6 +504,7 @@ func _confirm_new_game() -> void:
 
 func _new_game() -> void:
 	floor_number = 1
+	highest_floor_unlocked = 1
 	wave_number = 1
 	endless_mode = false
 	core_hp = 100.0
@@ -1168,6 +1193,7 @@ func _next_floor() -> void:
 			_save_game()
 			return
 		floor_number += 1
+		highest_floor_unlocked = maxi(highest_floor_unlocked, floor_number)
 		wave_number = 1
 		lost = false
 		core_max_hp += 4.0
@@ -1311,6 +1337,7 @@ func _save_game() -> void:
 	var data := {
 		"version": SAVE_VERSION,
 		"floor": floor_number,
+		"highest_floor_unlocked": highest_floor_unlocked,
 		"wave": wave_number,
 		"core_hp": core_hp,
 		"core_max_hp": core_max_hp,
@@ -1393,6 +1420,8 @@ func _load_game() -> void:
 		message = "Save version unsupported; starting a new run."
 		return
 	floor_number = clampi(int(data.get("floor", 1)), 1, 9999)
+	highest_floor_unlocked = clampi(int(data.get("highest_floor_unlocked", floor_number)), 1, 9999)
+	highest_floor_unlocked = maxi(highest_floor_unlocked, floor_number)
 	wave_number = max(1, int(data.get("wave", 1)))
 	core_max_hp = maxf(100, float(data.get("core_max_hp", 100)))
 	core_hp = clampf(float(data.get("core_hp", core_max_hp)), 0, core_max_hp)
