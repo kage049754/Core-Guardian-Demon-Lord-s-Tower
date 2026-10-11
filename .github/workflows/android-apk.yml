@@ -1,0 +1,82 @@
+name: Android APK Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform and build tools
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install Godot 4.4.1
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.4.1
+          use-dotnet: false
+
+      - name: Install matching Godot export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT_VERSION="4.4.1"
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          curl -fL "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz" -o /tmp/godot-templates.tpz
+          mkdir -p /tmp/godot-templates
+          unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
+          cp -R /tmp/godot-templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+
+      - name: Configure Android debug signing
+        run: |
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Validate project
+        run: |
+          godot --headless --editor --path . --quit
+          timeout 20s godot --headless --path . --quit-after 5
+
+      - name: Export Android APK
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/CoreGuardian.apk
+
+      - name: Verify APK metadata and integrity
+        run: |
+          test -s build/CoreGuardian.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging build/CoreGuardian.apk | tee build/apk-metadata.txt
+          grep -q "package: name='com.coreguardian.demonlordstower'" build/apk-metadata.txt
+          unzip -t build/CoreGuardian.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoreGuardian-Android-APK
+          path: |
+            build/CoreGuardian.apk
+            build/apk-metadata.txt
+          if-no-files-found: error
+          retention-days: 14
