@@ -316,11 +316,11 @@ func _complete_wave() -> void:
 		message = "Wave cleared. Upgrade your defenses or continue."
 		message_clock = 3.0
 	wave_number += 1
-	_save_game()
 	# The player explicitly advances using NEXT FLOOR. Avoid surprise wave jumps.
 	floor_cleared = true
 	lost = false
 	campaign_won = false
+	_save_game()
 
 func _upgrade_core() -> void:
 	var cost := _upgrade_cost()
@@ -477,6 +477,9 @@ func _save_game() -> void:
 		"research_level": research_level,
 		"guardian_level": guardian_level,
 		"defeated": defeated,
+		"lost": lost,
+		"floor_cleared": floor_cleared,
+		"campaign_won": campaign_won,
 		"last_saved_unix": int(Time.get_unix_time_from_system())
 	}
 	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
@@ -523,6 +526,9 @@ func _load_game() -> void:
 	research_level = maxi(0, int(data.get("research_level", 0)))
 	guardian_level = maxi(1, int(data.get("guardian_level", 1)))
 	defeated = maxi(0, int(data.get("defeated", 0)))
+	lost = bool(data.get("lost", false))
+	floor_cleared = bool(data.get("floor_cleared", false))
+	campaign_won = bool(data.get("campaign_won", false))
 	last_saved_unix = int(data.get("last_saved_unix", Time.get_unix_time_from_system()))
 	var elapsed := clampi(int(Time.get_unix_time_from_system()) - last_saved_unix, 0, MAX_OFFLINE_SECONDS)
 	var reward := int(elapsed / 60.0) * (1 + research_level / 3)
