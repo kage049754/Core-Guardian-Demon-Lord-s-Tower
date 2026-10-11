@@ -88,11 +88,12 @@ func _ready() -> void:
 	relic_definitions = _load_content_array("res://content/relics.json", "relics")
 	_build_ui()
 	_load_game()
-	_start_wave()
+	if message_clock <= 0.0:
+		_start_wave()
 	queue_redraw()
 
 func _process(delta: float) -> void:
-	if message_clock > 0.0:
+	if message_clock > 0.0 and not menu_open:
 		message_clock -= delta
 	if skill_cooldown > 0.0:
 		skill_cooldown = maxf(0.0, skill_cooldown - delta)
