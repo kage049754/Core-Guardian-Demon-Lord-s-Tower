@@ -26,10 +26,10 @@ jobs:
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
+          packages: "platform-tools platforms;android-35 build-tools;35.0.1 cmake;3.10.2.4988404 ndk;28.1.13356709"
 
       - name: Install Android platform and build tools
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.1" "cmake;3.10.2.4988404" "ndk;28.1.13356709"
 
       - name: Install Godot 4.4.1
         uses: chickensoft-games/setup-godot@v2
@@ -86,7 +86,7 @@ jobs:
       - name: Verify APK metadata and integrity
         run: |
           test -s build/CoreGuardian.apk
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging build/CoreGuardian.apk | tee build/apk-metadata.txt
+          "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging build/CoreGuardian.apk | tee build/apk-metadata.txt
           grep -q "package: name='com.coreguardian.demonlordstower'" build/apk-metadata.txt
           unzip -t build/CoreGuardian.apk
 
