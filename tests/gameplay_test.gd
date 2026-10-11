@@ -23,6 +23,33 @@ func run_tests() -> void:
 		_fail("Floor 10 milestone boss did not spawn.")
 		return
 
+	var boss_probe: Dictionary = {"name": "Boss Probe", "hp": 50.0, "max_hp": 100.0, "damage": 10.0, "distance": 200.0}
+	game.floor_number = 20
+	boss_probe = game._apply_boss_special(boss_probe)
+	if float(boss_probe["hp"]) != 58.0:
+		_fail("Grave Paladin did not restore its armor.")
+		return
+	game.floor_number = 50
+	game.shield = 30.0
+	game._apply_boss_special(boss_probe)
+	if game.shield != 5.0:
+		_fail("Grand Magister did not dispel core shield.")
+		return
+	game.floor_number = 90
+	boss_probe["distance"] = 200.0
+	boss_probe = game._apply_boss_special(boss_probe)
+	if float(boss_probe["distance"]) != 265.0:
+		_fail("Void Champion did not displace itself.")
+		return
+	game.floor_number = 100
+	game.core_hp = 100.0
+	game.enemies.append(boss_probe.duplicate())
+	game.enemies.append(boss_probe.duplicate())
+	game._apply_boss_special(boss_probe)
+	if game.core_hp >= 100.0:
+		_fail("Legendary Hero Party did not coordinate its attack.")
+		return
+
 	game.enemies.clear()
 	game.floor_number = 1
 	game._start_wave()
