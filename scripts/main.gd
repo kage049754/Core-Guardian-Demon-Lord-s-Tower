@@ -55,6 +55,7 @@ var game_clock := 0.0
 var lost := false
 var floor_cleared := false
 var campaign_won := false
+var endless_mode := false
 var message := "The heroes are coming. Protect the core."
 var message_clock := 5.0
 var selected_panel := "battle"
@@ -319,6 +320,7 @@ func _confirm_new_game() -> void:
 func _new_game() -> void:
 	floor_number = 1
 	wave_number = 1
+	endless_mode = false
 	core_hp = 100.0
 	core_max_hp = 100.0
 	core_damage = 12.0
@@ -396,6 +398,8 @@ func _load_content_array(path: String, key: String) -> Array:
 	return value
 
 func _floor_definition() -> Dictionary:
+	if floor_number > FLOOR_COUNT:
+		return {"floor": floor_number, "region": "Endless Spire", "boss_floor": floor_number % 10 == 0, "boss_name": "Endless Champion", "wave_count": mini(12, 4 + int(floor_number / 8))}
 	if floor_definitions.is_empty():
 		return {}
 	var index := clampi(floor_number - 1, 0, floor_definitions.size() - 1)
@@ -849,17 +853,21 @@ func _next_floor() -> void:
 		return
 	if campaign_won:
 		floor_cleared = false
-		floor_number = 1
+		endless_mode = true
+		floor_number = FLOOR_COUNT + 1
+		wave_number = 1
 		campaign_won = false
 		lost = false
 		core_hp = core_max_hp
+		message = "Endless Spire begins. Every tenth floor brings an Endless Champion."
+		message_clock = 5.0
 		_start_wave()
 	elif floor_cleared:
 		floor_cleared = false
-		if floor_number >= FLOOR_COUNT:
+		if floor_number >= FLOOR_COUNT and not endless_mode:
 			campaign_won = true
 			lost = false
-			message = "100 FLOORS CLEARED — endless mode unlocked!"
+			message = "100 FLOORS CLEARED — tap NEXT FLOOR to enter endless survival."
 			message_clock = 999.0
 			_save_game()
 			return
@@ -983,6 +991,7 @@ func _save_game() -> void:
 		"lost": lost,
 		"floor_cleared": floor_cleared,
 		"campaign_won": campaign_won,
+		"endless_mode": endless_mode,
 		"last_saved_unix": int(Time.get_unix_time_from_system())
 	}
 	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
@@ -1033,7 +1042,7 @@ func _load_game() -> void:
 	if version > SAVE_VERSION or version < 1:
 		message = "Save version unsupported; starting a new run."
 		return
-	floor_number = clampi(int(data.get("floor", 1)), 1, FLOOR_COUNT)
+	floor_number = clampi(int(data.get("floor", 1)), 1, 9999)
 	wave_number = max(1, int(data.get("wave", 1)))
 	core_max_hp = maxf(100, float(data.get("core_max_hp", 100)))
 	core_hp = clampf(float(data.get("core_hp", core_max_hp)), 0, core_max_hp)
@@ -1059,6 +1068,7 @@ func _load_game() -> void:
 	lost = bool(data.get("lost", false))
 	floor_cleared = bool(data.get("floor_cleared", false))
 	campaign_won = bool(data.get("campaign_won", false))
+	endless_mode = bool(data.get("endless_mode", floor_number > FLOOR_COUNT))
 	last_saved_unix = int(data.get("last_saved_unix", Time.get_unix_time_from_system()))
 	var elapsed := clampi(int(Time.get_unix_time_from_system()) - last_saved_unix, 0, MAX_OFFLINE_SECONDS)
 	var reward: int = int(elapsed / 60.0) * (1 + int(research_ranks.get("soul_alchemy", 0) / 3))
