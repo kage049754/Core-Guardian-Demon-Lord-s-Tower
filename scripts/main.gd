@@ -620,6 +620,10 @@ func _update_combat(delta: float) -> void:
 					var hp_ratio := float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"]))
 					var phase_damage := 0.35 if hp_ratio > 0.33 else 0.65
 					_damage_core(float(enemy["damage"]) * phase_damage)
+					if lost:
+						return
+					enemy = _apply_boss_special(enemy)
+					distance = float(enemy["distance"])
 					message = "%s unleashes the core-breaking technique!" % enemy["name"]
 					message_clock = 1.6
 					if lost:
@@ -647,6 +651,47 @@ func _update_combat(delta: float) -> void:
 			shots[i] = shot
 	if wave_spawned >= enemy_spawn_limit and enemies.is_empty():
 		_complete_wave()
+
+
+func _apply_boss_special(enemy: Dictionary) -> Dictionary:
+	var boss_floor := floor_number
+	var name := str(enemy.get("name", "Boss"))
+	match boss_floor:
+		10: # Knight-Captain: a hard breach strike.
+			_damage_core(float(enemy.get("damage", 0.0)) * 0.20)
+			message = "%s drives the vanguard's breach strike!" % name
+		20: # Grave Paladin: restore undead armor.
+			enemy["hp"] = minf(float(enemy.get("max_hp", 1.0)), float(enemy.get("hp", 1.0)) + float(enemy.get("max_hp", 1.0)) * 0.08)
+			message = "%s restores its grave armor." % name
+		30: # Thorn Witch: poison the core.
+			_damage_core(float(enemy.get("damage", 0.0)) * 0.30)
+			message = "%s poisons the Demonic Core!" % name
+		40: # Siege Engineer: disrupt the turret firing cycle.
+			turret_clock = minf(turret_clock, turret_rate * 0.35)
+			message = "%s disrupts the Soul Turrets!" % name
+		50: # Grand Magister: strip accumulated shielding.
+			shield = maxf(0.0, shield - 25.0)
+			message = "%s dispels 25 points of core shield." % name
+		60: # Crimson Saint: blood recovery.
+			enemy["hp"] = minf(float(enemy.get("max_hp", 1.0)), float(enemy.get("hp", 1.0)) + float(enemy.get("max_hp", 1.0)) * 0.10)
+			message = "%s drinks in the crimson light and heals." % name
+		70: # Ashen Dragon: sweeping breath hits harder.
+			_damage_core(float(enemy.get("damage", 0.0)) * 0.40)
+			message = "%s sweeps the tower with ashen breath!" % name
+		80: # Fallen Seraph: holy recovery during its shield phase.
+			enemy["hp"] = minf(float(enemy.get("max_hp", 1.0)), float(enemy.get("hp", 1.0)) + float(enemy.get("max_hp", 1.0)) * 0.06)
+			message = "%s invokes a fallen-seraph ward." % name
+		90: # Void Champion: spatial displacement.
+			enemy["distance"] = minf(410.0, float(enemy.get("distance", 0.0)) + 65.0)
+			message = "%s folds space and retreats!" % name
+		100: # Hero party: coordinated strike when multiple roles survive.
+			if enemies.size() >= 2:
+				_damage_core(float(enemy.get("damage", 0.0)) * 0.25)
+				message = "The Legendary Hero Party performs a coordinated assault!"
+			else:
+				message = "%s launches a desperate solo assault!" % name
+	message_clock = 1.7
+	return enemy
 
 func _enemy_name(kind: int) -> String:
 	if kind >= 0 and kind < enemy_definitions.size():
