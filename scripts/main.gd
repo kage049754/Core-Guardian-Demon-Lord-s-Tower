@@ -20,6 +20,7 @@ var rng := RandomNumberGenerator.new()
 var hero_atlas: Texture2D
 var boss_atlas: Texture2D
 var background_art: Texture2D
+var region_backgrounds: Array[Texture2D] = []
 var floor_definitions: Array = []
 var guardian_definitions: Array = []
 var enemy_definitions: Array = []
@@ -95,6 +96,7 @@ func _ready() -> void:
 	hero_atlas = load("res://assets/characters/hero_atlas.svg")
 	boss_atlas = load("res://assets/characters/boss_atlas.svg")
 	background_art = load("res://assets/environments/outer_gate.svg")
+	_load_region_backgrounds()
 	_load_floor_content()
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
 	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
@@ -618,6 +620,26 @@ func _button_style(color: Color) -> StyleBoxFlat:
 	style.content_margin_right = 8
 	return style
 
+
+
+func _load_region_backgrounds() -> void:
+	region_backgrounds.clear()
+	var paths: Array[String] = [
+		"res://assets/environments/outer_gate.svg",
+		"res://assets/environments/bone_catacombs.svg",
+		"res://assets/environments/blighted_garden.svg",
+		"res://assets/environments/iron_foundry.svg",
+		"res://assets/environments/arcane_archive.svg",
+		"res://assets/environments/blood_moon_keep.svg",
+		"res://assets/environments/dragon_grave.svg",
+		"res://assets/environments/celestial_prison.svg",
+		"res://assets/environments/abyssal_rift.svg",
+		"res://assets/environments/throne_approach.svg"
+	]
+	for path in paths:
+		var texture := load(path) as Texture2D
+		if texture != null:
+			region_backgrounds.append(texture)
 
 func _load_floor_content() -> void:
 	var file := FileAccess.open("res://content/floors.json", FileAccess.READ)
@@ -1301,7 +1323,10 @@ func _next_floor() -> void:
 
 func _draw() -> void:
 	var viewport := get_viewport_rect().size
-	if background_art != null:
+	var region_index := mini(9, int((floor_number - 1) / 10))
+	if region_backgrounds.size() > region_index:
+		draw_texture_rect(region_backgrounds[region_index], Rect2(Vector2.ZERO, viewport), false, Color.WHITE)
+	elif background_art != null:
 		draw_texture_rect(background_art, Rect2(Vector2.ZERO, viewport), false, Color.WHITE)
 	var region_tints := [
 		Color(0.20, 0.08, 0.25, 0.10), Color(0.08, 0.12, 0.22, 0.14),
