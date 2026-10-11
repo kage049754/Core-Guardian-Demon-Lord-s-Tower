@@ -89,7 +89,7 @@ jobs:
         run: timeout 30s godot --headless --path . --script res://tests/test_game.gd
 
       - name: Run gameplay integration tests
-        run: timeout 30s godot --headless --path . res://tests/gameplay_test.tscn
+        run: timeout 30s godot --headless --path . --script res://tests/gameplay_test.gd
 
       - name: Export Android APK
         env:
