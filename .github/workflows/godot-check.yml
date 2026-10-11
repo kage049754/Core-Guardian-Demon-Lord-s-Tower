@@ -29,7 +29,7 @@ jobs:
         run: timeout 20s godot --headless --path . --quit-after 5
 
       - name: Run gameplay smoke tests
-        run: godot --headless --path . --script res://tests/test_game.gd
+        run: timeout 30s godot --headless --path . --script res://tests/test_game.gd
 
       - name: Upload project validation report
         if: always()
