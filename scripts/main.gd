@@ -566,6 +566,8 @@ func _confirm_new_game() -> void:
 	dialog.popup_centered()
 
 func _new_game() -> void:
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
 	floor_number = 1
 	highest_floor_unlocked = 1
 	wave_number = 1
