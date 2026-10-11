@@ -17,6 +17,7 @@ const GUARDIAN_NAMES := ["Varkhan · Abyss Knight", "Nyxara · Soul Weaver", "Mo
 
 var rng := RandomNumberGenerator.new()
 var hero_atlas: Texture2D
+var background_art: Texture2D
 var floor_definitions: Array = []
 var guardian_definitions: Array = []
 var enemy_definitions: Array = []
@@ -60,6 +61,7 @@ func _ready() -> void:
 	rng.randomize()
 	screen_size = get_viewport_rect().size
 	hero_atlas = load("res://assets/characters/hero_atlas.svg")
+	background_art = load("res://assets/environments/outer_gate.svg")
 	_load_floor_content()
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
 	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
@@ -450,6 +452,8 @@ func _next_floor() -> void:
 
 func _draw() -> void:
 	var viewport := get_viewport_rect().size
+	if background_art != null:
+		draw_texture_rect(background_art, Rect2(Vector2.ZERO, viewport), false, Color.WHITE)
 	var center := Vector2(viewport.x * 0.5, viewport.y * 0.49)
 	var outer_radius := minf(viewport.x * 0.46, viewport.y * 0.32)
 	draw_circle(center, outer_radius + 24, Color(0.10, 0.05, 0.15, 0.75))
