@@ -1,0 +1,1708 @@
+{
+  "schema_version": 1,
+  "campaign_floors": 100,
+  "regions": [
+    {
+      "index": 1,
+      "name": "The Outer Gate",
+      "floors": [
+        1,
+        10
+      ],
+      "boss": "Knight-Captain"
+    },
+    {
+      "index": 2,
+      "name": "The Bone Catacombs",
+      "floors": [
+        11,
+        20
+      ],
+      "boss": "Grave Paladin"
+    },
+    {
+      "index": 3,
+      "name": "The Blighted Garden",
+      "floors": [
+        21,
+        30
+      ],
+      "boss": "Thorn Witch"
+    },
+    {
+      "index": 4,
+      "name": "The Iron Foundry",
+      "floors": [
+        31,
+        40
+      ],
+      "boss": "Siege Engineer"
+    },
+    {
+      "index": 5,
+      "name": "The Arcane Archive",
+      "floors": [
+        41,
+        50
+      ],
+      "boss": "Grand Magister"
+    },
+    {
+      "index": 6,
+      "name": "The Blood Moon Keep",
+      "floors": [
+        51,
+        60
+      ],
+      "boss": "Crimson Saint"
+    },
+    {
+      "index": 7,
+      "name": "The Dragon Grave",
+      "floors": [
+        61,
+        70
+      ],
+      "boss": "Ashen Dragon"
+    },
+    {
+      "index": 8,
+      "name": "The Celestial Prison",
+      "floors": [
+        71,
+        80
+      ],
+      "boss": "Fallen Seraph"
+    },
+    {
+      "index": 9,
+      "name": "The Abyssal Rift",
+      "floors": [
+        81,
+        90
+      ],
+      "boss": "Void Champion"
+    },
+    {
+      "index": 10,
+      "name": "The Throne Approach",
+      "floors": [
+        91,
+        100
+      ],
+      "boss": "Legendary Hero Party"
+    }
+  ],
+  "floors": [
+    {
+      "floor": 1,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 1,
+      "reward_multiplier": 1
+    },
+    {
+      "floor": 2,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 1,
+      "reward_multiplier": 1.12
+    },
+    {
+      "floor": 3,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 1,
+      "reward_multiplier": 1.24
+    },
+    {
+      "floor": 4,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 2,
+      "reward_multiplier": 1.36
+    },
+    {
+      "floor": 5,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 2,
+      "reward_multiplier": 1.48
+    },
+    {
+      "floor": 6,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 2,
+      "reward_multiplier": 1.6
+    },
+    {
+      "floor": 7,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 3,
+      "reward_multiplier": 1.72
+    },
+    {
+      "floor": 8,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 4,
+      "recommended_core_level": 3,
+      "reward_multiplier": 1.84
+    },
+    {
+      "floor": 9,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 3,
+      "reward_multiplier": 1.96
+    },
+    {
+      "floor": 10,
+      "region": "The Outer Gate",
+      "region_index": 1,
+      "boss_floor": true,
+      "boss_name": "Knight-Captain",
+      "boss_mechanics": "Guard stance and charge; summons shielded vanguards.",
+      "enemy_pool": [
+        "Vanguard",
+        "Ranger",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 4,
+      "reward_multiplier": 2.08
+    },
+    {
+      "floor": 11,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 4,
+      "reward_multiplier": 2.2
+    },
+    {
+      "floor": 12,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 4,
+      "reward_multiplier": 2.32
+    },
+    {
+      "floor": 13,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 5,
+      "reward_multiplier": 2.44
+    },
+    {
+      "floor": 14,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 5,
+      "reward_multiplier": 2.56
+    },
+    {
+      "floor": 15,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 5,
+      "reward_multiplier": 2.68
+    },
+    {
+      "floor": 16,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 5,
+      "recommended_core_level": 6,
+      "reward_multiplier": 2.8
+    },
+    {
+      "floor": 17,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 6,
+      "reward_multiplier": 2.92
+    },
+    {
+      "floor": 18,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 6,
+      "reward_multiplier": 3.04
+    },
+    {
+      "floor": 19,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 7,
+      "reward_multiplier": 3.16
+    },
+    {
+      "floor": 20,
+      "region": "The Bone Catacombs",
+      "region_index": 2,
+      "boss_floor": true,
+      "boss_name": "Grave Paladin",
+      "boss_mechanics": "Undead armor and periodic healing pulse.",
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 7,
+      "reward_multiplier": 3.28
+    },
+    {
+      "floor": 21,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 7,
+      "reward_multiplier": 3.4
+    },
+    {
+      "floor": 22,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 8,
+      "reward_multiplier": 3.52
+    },
+    {
+      "floor": 23,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 8,
+      "reward_multiplier": 3.64
+    },
+    {
+      "floor": 24,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 6,
+      "recommended_core_level": 8,
+      "reward_multiplier": 3.76
+    },
+    {
+      "floor": 25,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 9,
+      "reward_multiplier": 3.88
+    },
+    {
+      "floor": 26,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 9,
+      "reward_multiplier": 4
+    },
+    {
+      "floor": 27,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 9,
+      "reward_multiplier": 4.12
+    },
+    {
+      "floor": 28,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 10,
+      "reward_multiplier": 4.24
+    },
+    {
+      "floor": 29,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 10,
+      "reward_multiplier": 4.36
+    },
+    {
+      "floor": 30,
+      "region": "The Blighted Garden",
+      "region_index": 3,
+      "boss_floor": true,
+      "boss_name": "Thorn Witch",
+      "boss_mechanics": "Poison zones, root summons, heals while support survives.",
+      "enemy_pool": [
+        "Ranger",
+        "Shadow Assassin",
+        "Battle Mage"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 10,
+      "reward_multiplier": 4.48
+    },
+    {
+      "floor": 31,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 11,
+      "reward_multiplier": 4.6
+    },
+    {
+      "floor": 32,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 7,
+      "recommended_core_level": 11,
+      "reward_multiplier": 4.72
+    },
+    {
+      "floor": 33,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 11,
+      "reward_multiplier": 4.84
+    },
+    {
+      "floor": 34,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 12,
+      "reward_multiplier": 4.96
+    },
+    {
+      "floor": 35,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 12,
+      "reward_multiplier": 5.08
+    },
+    {
+      "floor": 36,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 12,
+      "reward_multiplier": 5.2
+    },
+    {
+      "floor": 37,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 13,
+      "reward_multiplier": 5.32
+    },
+    {
+      "floor": 38,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 13,
+      "reward_multiplier": 5.44
+    },
+    {
+      "floor": 39,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 13,
+      "reward_multiplier": 5.56
+    },
+    {
+      "floor": 40,
+      "region": "The Iron Foundry",
+      "region_index": 4,
+      "boss_floor": true,
+      "boss_name": "Siege Engineer",
+      "boss_mechanics": "Deploys siege devices that damage defensive structures.",
+      "enemy_pool": [
+        "Siege Golem",
+        "Vanguard",
+        "Ranger"
+      ],
+      "wave_count": 8,
+      "recommended_core_level": 14,
+      "reward_multiplier": 5.68
+    },
+    {
+      "floor": 41,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 14,
+      "reward_multiplier": 5.8
+    },
+    {
+      "floor": 42,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 14,
+      "reward_multiplier": 5.92
+    },
+    {
+      "floor": 43,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 15,
+      "reward_multiplier": 6.04
+    },
+    {
+      "floor": 44,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 15,
+      "reward_multiplier": 6.16
+    },
+    {
+      "floor": 45,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 15,
+      "reward_multiplier": 6.28
+    },
+    {
+      "floor": 46,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 16,
+      "reward_multiplier": 6.4
+    },
+    {
+      "floor": 47,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 16,
+      "reward_multiplier": 6.52
+    },
+    {
+      "floor": 48,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 9,
+      "recommended_core_level": 16,
+      "reward_multiplier": 6.64
+    },
+    {
+      "floor": 49,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 17,
+      "reward_multiplier": 6.76
+    },
+    {
+      "floor": 50,
+      "region": "The Arcane Archive",
+      "region_index": 5,
+      "boss_floor": true,
+      "boss_name": "Grand Magister",
+      "boss_mechanics": "Arcane barriers, teleporting and shield dispels.",
+      "enemy_pool": [
+        "Battle Mage",
+        "Relic Hunter",
+        "Field Medic"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 17,
+      "reward_multiplier": 6.88
+    },
+    {
+      "floor": 51,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 17,
+      "reward_multiplier": 7
+    },
+    {
+      "floor": 52,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 18,
+      "reward_multiplier": 7.12
+    },
+    {
+      "floor": 53,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 18,
+      "reward_multiplier": 7.24
+    },
+    {
+      "floor": 54,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 18,
+      "reward_multiplier": 7.36
+    },
+    {
+      "floor": 55,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 19,
+      "reward_multiplier": 7.48
+    },
+    {
+      "floor": 56,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 10,
+      "recommended_core_level": 19,
+      "reward_multiplier": 7.6
+    },
+    {
+      "floor": 57,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 19,
+      "reward_multiplier": 7.72
+    },
+    {
+      "floor": 58,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 20,
+      "reward_multiplier": 7.84
+    },
+    {
+      "floor": 59,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 20,
+      "reward_multiplier": 7.96
+    },
+    {
+      "floor": 60,
+      "region": "The Blood Moon Keep",
+      "region_index": 6,
+      "boss_floor": true,
+      "boss_name": "Crimson Saint",
+      "boss_mechanics": "Lifesteal burst and healing suppression.",
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Vanguard",
+        "Champion"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 20,
+      "reward_multiplier": 8.08
+    },
+    {
+      "floor": 61,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 21,
+      "reward_multiplier": 8.2
+    },
+    {
+      "floor": 62,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 21,
+      "reward_multiplier": 8.32
+    },
+    {
+      "floor": 63,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 21,
+      "reward_multiplier": 8.44
+    },
+    {
+      "floor": 64,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 11,
+      "recommended_core_level": 22,
+      "reward_multiplier": 8.56
+    },
+    {
+      "floor": 65,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 22,
+      "reward_multiplier": 8.68
+    },
+    {
+      "floor": 66,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 22,
+      "reward_multiplier": 8.8
+    },
+    {
+      "floor": 67,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 23,
+      "reward_multiplier": 8.92
+    },
+    {
+      "floor": 68,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 23,
+      "reward_multiplier": 9.04
+    },
+    {
+      "floor": 69,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 23,
+      "reward_multiplier": 9.16
+    },
+    {
+      "floor": 70,
+      "region": "The Dragon Grave",
+      "region_index": 7,
+      "boss_floor": true,
+      "boss_name": "Ashen Dragon",
+      "boss_mechanics": "Sweeping breath, armored flight and adds.",
+      "enemy_pool": [
+        "Siege Golem",
+        "Battle Mage",
+        "Ranger"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 24,
+      "reward_multiplier": 9.28
+    },
+    {
+      "floor": 71,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 24,
+      "reward_multiplier": 9.4
+    },
+    {
+      "floor": 72,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 24,
+      "reward_multiplier": 9.52
+    },
+    {
+      "floor": 73,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 25,
+      "reward_multiplier": 9.64
+    },
+    {
+      "floor": 74,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 25,
+      "reward_multiplier": 9.76
+    },
+    {
+      "floor": 75,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 25,
+      "reward_multiplier": 9.88
+    },
+    {
+      "floor": 76,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 26,
+      "reward_multiplier": 10
+    },
+    {
+      "floor": 77,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 26,
+      "reward_multiplier": 10.12
+    },
+    {
+      "floor": 78,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 26,
+      "reward_multiplier": 10.24
+    },
+    {
+      "floor": 79,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 27,
+      "reward_multiplier": 10.36
+    },
+    {
+      "floor": 80,
+      "region": "The Celestial Prison",
+      "region_index": 8,
+      "boss_floor": true,
+      "boss_name": "Fallen Seraph",
+      "boss_mechanics": "Holy shield phases and coordinated elite party.",
+      "enemy_pool": [
+        "Champion",
+        "Field Medic",
+        "Relic Hunter"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 27,
+      "reward_multiplier": 10.48
+    },
+    {
+      "floor": 81,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 27,
+      "reward_multiplier": 10.6
+    },
+    {
+      "floor": 82,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 28,
+      "reward_multiplier": 10.72
+    },
+    {
+      "floor": 83,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 28,
+      "reward_multiplier": 10.84
+    },
+    {
+      "floor": 84,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 28,
+      "reward_multiplier": 10.96
+    },
+    {
+      "floor": 85,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 29,
+      "reward_multiplier": 11.08
+    },
+    {
+      "floor": 86,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 29,
+      "reward_multiplier": 11.2
+    },
+    {
+      "floor": 87,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 29,
+      "reward_multiplier": 11.32
+    },
+    {
+      "floor": 88,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 30,
+      "reward_multiplier": 11.44
+    },
+    {
+      "floor": 89,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 30,
+      "reward_multiplier": 11.56
+    },
+    {
+      "floor": 90,
+      "region": "The Abyssal Rift",
+      "region_index": 9,
+      "boss_floor": true,
+      "boss_name": "Void Champion",
+      "boss_mechanics": "Shifting routes, summons and temporary defense disruption.",
+      "enemy_pool": [
+        "Shadow Assassin",
+        "Champion",
+        "Siege Golem"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 30,
+      "reward_multiplier": 11.68
+    },
+    {
+      "floor": 91,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 31,
+      "reward_multiplier": 11.8
+    },
+    {
+      "floor": 92,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 31,
+      "reward_multiplier": 11.92
+    },
+    {
+      "floor": 93,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 31,
+      "reward_multiplier": 12.04
+    },
+    {
+      "floor": 94,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 32,
+      "reward_multiplier": 12.16
+    },
+    {
+      "floor": 95,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 32,
+      "reward_multiplier": 12.28
+    },
+    {
+      "floor": 96,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 32,
+      "reward_multiplier": 12.4
+    },
+    {
+      "floor": 97,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 33,
+      "reward_multiplier": 12.52
+    },
+    {
+      "floor": 98,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 33,
+      "reward_multiplier": 12.64
+    },
+    {
+      "floor": 99,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": false,
+      "boss_name": null,
+      "boss_mechanics": null,
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 33,
+      "reward_multiplier": 12.76
+    },
+    {
+      "floor": 100,
+      "region": "The Throne Approach",
+      "region_index": 10,
+      "boss_floor": true,
+      "boss_name": "Legendary Hero Party",
+      "boss_mechanics": "Warrior, mage, healer and assassin coordinate a three-stage siege.",
+      "enemy_pool": [
+        "Vanguard",
+        "Battle Mage",
+        "Field Medic",
+        "Shadow Assassin"
+      ],
+      "wave_count": 12,
+      "recommended_core_level": 34,
+      "reward_multiplier": 12.88
+    }
+  ]
+}
