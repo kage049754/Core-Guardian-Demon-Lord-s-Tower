@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "branches": [
+    {
+      "id": "core_mastery",
+      "name": "Core Mastery",
+      "description": "Health, shields, regeneration and core attacks",
+      "nodes": [
+        {
+          "id": "reinforced_crystal",
+          "name": "Reinforced Crystal",
+          "max_rank": 10,
+          "base_cost": 40,
+          "effect_per_rank": "Increase core maximum health by 5%."
+        },
+        {
+          "id": "core_focus",
+          "name": "Core Focus",
+          "max_rank": 10,
+          "base_cost": 45,
+          "effect_per_rank": "Increase core attack damage by 4%."
+        }
+      ]
+    },
+    {
+      "id": "demonology",
+      "name": "Demonology",
+      "description": "Guardian damage, summon limits and evolutions",
+      "nodes": [
+        {
+          "id": "demon_might",
+          "name": "Demon Might",
+          "max_rank": 10,
+          "base_cost": 55,
+          "effect_per_rank": "Increase guardian damage by 5%."
+        },
+        {
+          "id": "soul_contract",
+          "name": "Soul Contract",
+          "max_rank": 5,
+          "base_cost": 100,
+          "effect_per_rank": "Reduce guardian summon costs by 3%."
+        }
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering",
+      "description": "Turrets, traps and defensive slots",
+      "nodes": [
+        {
+          "id": "rune_barrels",
+          "name": "Rune Barrels",
+          "max_rank": 10,
+          "base_cost": 50,
+          "effect_per_rank": "Increase defensive structure damage by 5%."
+        }
+      ]
+    },
+    {
+      "id": "soul_alchemy",
+      "name": "Soul Alchemy",
+      "description": "Resources, relic crafting and offline income",
+      "nodes": [
+        {
+          "id": "deep_pockets",
+          "name": "Deep Pockets",
+          "max_rank": 10,
+          "base_cost": 60,
+          "effect_per_rank": "Increase gold rewards by 4%."
+        },
+        {
+          "id": "long_dream",
+          "name": "Long Dream",
+          "max_rank": 5,
+          "base_cost": 120,
+          "effect_per_rank": "Increase offline income efficiency; the offline duration cap remains enforced."
+        }
+      ]
+    },
+    {
+      "id": "lordship",
+      "name": "Lordship",
+      "description": "Ultimate abilities and prestige unlocks",
+      "nodes": [
+        {
+          "id": "demon_command",
+          "name": "Demon Command",
+          "max_rank": 5,
+          "base_cost": 150,
+          "effect_per_rank": "Reduce active ability cooldowns by 3%."
+        },
+        {
+          "id": "seal_memory",
+          "name": "Seal Memory",
+          "max_rank": 5,
+          "base_cost": 200,
+          "effect_per_rank": "Improve prestige rewards."
+        }
+      ]
+    }
+  ]
+}
