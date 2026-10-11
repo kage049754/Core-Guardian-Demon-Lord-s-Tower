@@ -410,7 +410,8 @@ func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
-	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d   FRAGMENTS %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points, relic_fragments]
+	var floor_label := "FLOOR %03d / 100" % floor_number if floor_number <= FLOOR_COUNT else "ENDLESS FLOOR %03d" % floor_number
+	hud_label.text = "%s  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d   FRAGMENTS %d" % [floor_label, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points, relic_fragments]
 	status_label.text = "%s  |  Core: %s  |  Guardians %d · Lv.%d  |  %s" % [region, core_evolution.capitalize(), guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
@@ -432,7 +433,7 @@ func _update_ui() -> void:
 				button.text = "BUY RESEARCH  ·  %d gold / 1 point" % _research_cost()
 				button.disabled = gold < _research_cost() or research_points < 1
 			"EVOLVE CORE":
-				button.text = "EVOLVE CORE · 3 research"
+				button.text = "EVOLVE CORE  ·  3 research"
 				button.disabled = research_points < 3 or lost or campaign_won
 			"EMERGENCY SHIELD":
 				button.text = "EMERGENCY SHIELD  ·  %s" % ("READY" if skill_ready else "%.1fs" % skill_cooldown)
