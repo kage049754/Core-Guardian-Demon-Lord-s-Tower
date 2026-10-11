@@ -55,7 +55,7 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 ## Phase 4 — Floors 1–10 and progression
 
 - [ ] Data for all 100 floors, ten regions and ten milestone bosses exists, and the tower map is implemented. Full playable encounter testing for floors 1–10 remains open.
-- [ ] Tower map, basic rewards and floor unlock/retry flow exist; a dedicated results screen and verified replay behavior remain open.
+- [x] Tower map supports selecting and replaying unlocked floors without reducing the highest unlocked floor; defeat retry and campaign-to-endless transitions are covered by automated tests. A dedicated results screen remains open.
 - [ ] Add initial guardian collection and bestiary.
 - [ ] Test all floor links, boss conditions, rewards, and progression persistence.
 
