@@ -4,6 +4,7 @@ extends Node2D
 ## All combat outcomes are simulated here; _draw() only visualizes game state.
 
 const SAVE_PATH := "user://core_guardian_save.json"
+const SAVE_VERSION := 2
 const MAX_OFFLINE_SECONDS := 8 * 60 * 60
 const FLOOR_COUNT := 100
 const REGION_NAMES := [
@@ -724,7 +725,7 @@ func _enemy_color(kind: int) -> Color:
 
 func _save_game() -> void:
 	var data := {
-		"version": 1,
+		"version": SAVE_VERSION,
 		"floor": floor_number,
 		"wave": wave_number,
 		"core_hp": core_hp,
@@ -790,7 +791,7 @@ func _load_game() -> void:
 		return
 	var data: Dictionary = parsed
 	var version := int(data.get("version", 0))
-	if version > 1 or version < 1:
+	if version > SAVE_VERSION or version < 1:
 		message = "Save version unsupported; starting a new run."
 		return
 	floor_number = clampi(int(data.get("floor", 1)), 1, FLOOR_COUNT)
