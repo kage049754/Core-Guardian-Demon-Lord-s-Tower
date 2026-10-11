@@ -1,7 +1,7 @@
 extends SceneTree
 
 func _initialize() -> void:
-	run_tests()
+	call_deferred("run_tests")
 
 func run_tests() -> void:
 	var packed: PackedScene = load("res://scenes/main.tscn")
@@ -10,6 +10,7 @@ func run_tests() -> void:
 		return
 	var game: Variant = packed.instantiate()
 	root.add_child(game)
+	await process_frame
 	game._new_game()
 	if game.floor_number != 1 or game.core_hp <= 0:
 		_fail("New-game initialization failed.")
