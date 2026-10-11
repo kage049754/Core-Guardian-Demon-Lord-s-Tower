@@ -145,8 +145,21 @@ func run_tests() -> void:
 		_fail("Three-slot relic loadout limit or equipped bonuses failed.")
 		return
 
+	game.defeated = 1
+	game.unlocked_achievements.clear()
+	game._check_achievements()
+	if not game.unlocked_achievements.has("first_blood"):
+		_fail("First Blood achievement did not unlock.")
+		return
+	game._save_game()
+	game.unlocked_achievements.clear()
+	game._load_game()
+	if not game.unlocked_achievements.has("first_blood"):
+		_fail("Achievement progress did not persist to the local save.")
+		return
+
 	game._new_game()
-	print("PASS: combat, boss mechanics, research, evolution, save/load, single-claim offline rewards, and relic loadout limits.")
+	print("PASS: combat, boss mechanics, research, evolution, save/load, offline rewards, relic loadouts, and achievement persistence.")
 	quit(0)
 
 func _fail(reason: String) -> void:
