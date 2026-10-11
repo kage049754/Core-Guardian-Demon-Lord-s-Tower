@@ -752,15 +752,31 @@ func _save_game() -> void:
 	file.store_string(JSON.stringify(data))
 	file.flush()
 	file.close()
-	if FileAccess.file_exists(SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
-	var err := DirAccess.rename_absolute(ProjectSettings.globalize_path(SAVE_PATH + ".tmp"), ProjectSettings.globalize_path(SAVE_PATH))
+	var main_path := ProjectSettings.globalize_path(SAVE_PATH)
+	var temp_path := ProjectSettings.globalize_path(SAVE_PATH + ".tmp")
+	var backup_path := ProjectSettings.globalize_path(SAVE_PATH + ".bak")
+	if FileAccess.file_exists(backup_path):
+		DirAccess.remove_absolute(backup_path)
+	if FileAccess.file_exists(main_path):
+		var backup_error := DirAccess.rename_absolute(main_path, backup_path)
+		if backup_error != OK:
+			push_error("Could not preserve previous save: %s" % error_string(backup_error))
+			return
+	var err := DirAccess.rename_absolute(temp_path, main_path)
 	if err != OK:
+		if FileAccess.file_exists(backup_path):
+			DirAccess.rename_absolute(backup_path, main_path)
 		push_error("Could not replace save file: %s" % error_string(err))
 		return
+	if FileAccess.file_exists(backup_path):
+		DirAccess.remove_absolute(backup_path)
 	last_saved_unix = int(data["last_saved_unix"])
 
 func _load_game() -> void:
+	var main_path := ProjectSettings.globalize_path(SAVE_PATH)
+	var backup_path := ProjectSettings.globalize_path(SAVE_PATH + ".bak")
+	if not FileAccess.file_exists(SAVE_PATH) and FileAccess.file_exists(backup_path):
+		DirAccess.rename_absolute(backup_path, main_path)
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
@@ -801,7 +817,7 @@ func _load_game() -> void:
 	campaign_won = bool(data.get("campaign_won", false))
 	last_saved_unix = int(data.get("last_saved_unix", Time.get_unix_time_from_system()))
 	var elapsed := clampi(int(Time.get_unix_time_from_system()) - last_saved_unix, 0, MAX_OFFLINE_SECONDS)
-	var reward := int(elapsed / 60.0) * (1 + research_level / 3)
+	var reward: int = int(elapsed / 60.0) * (1 + int(research_ranks.get("soul_alchemy", 0) / 3))
 	gold += reward
 	if reward > 0:
 		offline_summary = "Offline reward: %d gold for %d minutes." % [reward, int(elapsed / 60)]
