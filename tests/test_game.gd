@@ -11,7 +11,6 @@ func run_checks() -> void:
 		return
 	var game: Variant = scene.instantiate()
 	root.add_child(game)
-	await process_frame
 	if game.floor_number != 1 or game.core_hp <= 0.0:
 		push_error("new run did not initialize correctly")
 		quit(1)
