@@ -18,6 +18,7 @@ const GUARDIAN_NAMES := ["Varkhan · Abyss Knight", "Nyxara · Soul Weaver", "Mo
 
 var rng := RandomNumberGenerator.new()
 var hero_atlas: Texture2D
+var boss_atlas: Texture2D
 var background_art: Texture2D
 var floor_definitions: Array = []
 var guardian_definitions: Array = []
@@ -86,6 +87,7 @@ func _ready() -> void:
 	rng.randomize()
 	screen_size = get_viewport_rect().size
 	hero_atlas = load("res://assets/characters/hero_atlas.svg")
+	boss_atlas = load("res://assets/characters/boss_atlas.svg")
 	background_art = load("res://assets/environments/outer_gate.svg")
 	_load_floor_content()
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
@@ -1159,10 +1161,14 @@ func _draw() -> void:
 			draw_line(pos, center, Color(1.0, 0.18, 0.3, 0.55), 3.0, true)
 		if not reduced_effects:
 			draw_circle(pos, size + 4, Color(color.r, color.g, color.b, 0.18))
-		if hero_atlas != null:
-			var bob := sin(game_clock * 5.0 + angle) * 2.0
+		var bob := sin(game_clock * 5.0 + angle) * 2.0
+		var destination := Rect2(pos + Vector2(-size, -size + bob), Vector2(size * 2.0, size * 2.0))
+		if bool(enemy["boss"]) and floor_number < 100 and boss_atlas != null:
+			var boss_index := clampi(int(floor_number / 10) - 1, 0, 9)
+			draw_texture_rect_region(boss_atlas, destination, Rect2(float(boss_index * 100), 0, 100, 100), Color.WHITE, false, true)
+		elif hero_atlas != null:
 			var source := Rect2(float(int(enemy["kind"]) * 100), 0, 100, 100)
-			draw_texture_rect_region(hero_atlas, Rect2(pos + Vector2(-size, -size + bob), Vector2(size * 2.0, size * 2.0)), source, Color.WHITE, false, true)
+			draw_texture_rect_region(hero_atlas, destination, source, Color.WHITE, false, true)
 		else:
 			draw_colored_polygon(PackedVector2Array([pos + Vector2(0, -size), pos + Vector2(size, 0), pos + Vector2(0, size), pos + Vector2(-size, 0)]), color)
 		var hp_ratio := clampf(float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"])), 0, 1)
