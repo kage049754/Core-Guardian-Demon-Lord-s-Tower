@@ -10,10 +10,10 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 
 ## Phase 0 — Repository and build foundation
 
-- [ ] Inspect repository tree, current branch, engine/project files, workflow files, and existing CI status.
-- [ ] Confirm Godot 4 / GDScript or document a justified alternative based on actual repository state.
-- [ ] Establish reproducible Android export and artifact naming.
-- [ ] Configure automated static checks and tests appropriate to the project.
+- [x] Inspect repository tree, current branch, engine/project files, workflow files, and existing CI status.
+- [x] Confirm Godot 4 / GDScript as the initial engine target.
+- [x] Add Android export preset, debug-signing setup, and a CI workflow; export still needs to pass.
+- [x] Add Godot import/startup validation workflow. Gameplay-specific automated tests remain incomplete.
 - [ ] Produce a real minimal APK; inspect package metadata and artifact integrity.
 - [ ] Install and launch on a compatible Android device if device access is available.
 
@@ -21,10 +21,10 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 
 ## Phase 1 — Playable combat foundation
 
-- [ ] Implement battle scene, core health, one turret, one guardian, two enemy types, movement, targeting, damage, cooldowns, death.
-- [ ] Implement automatic core attacks and wave spawning/completion.
+- [ ] Initial battle scene, core health, automatic core attacks, guardian damage, enemy movement, targeting, damage, cooldowns, and defeat handling are present; this item remains open until the complete acceptance test suite passes.
+- [ ] Initial automatic attacks and wave spawning/completion logic exist; multi-wave encounter flow and validation remain incomplete.
 - [ ] Implement win, defeat, pause, restart, and a real upgrade choice.
-- [ ] Add tests for damage, targeting, cooldowns, wave completion, and core destruction.
+- [ ] Add automated gameplay tests for damage, targeting, cooldowns, wave completion, and core destruction.
 - [ ] Export and verify an Android build.
 
 **Exit gate:** one complete playable floor with a functional defeat and victory loop, not a static demonstration.
