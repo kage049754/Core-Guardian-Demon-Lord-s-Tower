@@ -37,6 +37,7 @@ var spawn_clock := 0.0
 var attack_clock := 0.0
 var game_clock := 0.0
 var lost := false
+var floor_cleared := false
 var campaign_won := false
 var message := "The heroes are coming. Protect the core."
 var message_clock := 5.0
@@ -142,6 +143,8 @@ func _update_ui() -> void:
 	status_label.text = "%s  |  Guardians Lv.%d  |  %s" % [region, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
+	elif floor_cleared:
+		status_label.text = "FLOOR CLEARED — upgrade your defenses, then advance."
 	elif campaign_won:
 		status_label.text = "CAMPAIGN CLEARED — endless survival unlocked. Tap NEXT FLOOR to continue."
 	for button in buttons:
@@ -200,7 +203,8 @@ func _update_combat(delta: float) -> void:
 		enemy["attack_clock"] = float(enemy["attack_clock"]) + delta
 		if distance <= 100.0:
 			_damage_core(float(enemy["damage"]) * delta)
-			enemy["distance"] = 100.0
+			if lost:
+				return
 		if float(enemy["hp"]) <= 0.0:
 			_on_enemy_defeated(enemy)
 			enemies.remove_at(i)
@@ -286,6 +290,7 @@ func _damage_core(amount: float) -> void:
 func _on_core_breached() -> void:
 	if lost or campaign_won:
 		return
+	floor_cleared = false
 	lost = true
 	message = "The Demonic Core has been destroyed."
 	message_clock = 999.0
@@ -313,7 +318,8 @@ func _complete_wave() -> void:
 	wave_number += 1
 	_save_game()
 	# The player explicitly advances using NEXT FLOOR. Avoid surprise wave jumps.
-	lost = true
+	floor_cleared = true
+	lost = false
 	campaign_won = false
 
 func _upgrade_core() -> void:
@@ -357,17 +363,19 @@ func _buy_research() -> void:
 	_save_game()
 
 func _next_floor() -> void:
-	if not lost and not campaign_won:
+	if not lost and not floor_cleared and not campaign_won:
 		message = "Clear this wave or let the core fall before advancing."
 		message_clock = 2.0
 		return
 	if campaign_won:
+		floor_cleared = false
 		floor_number = 1
 		campaign_won = false
 		lost = false
 		core_hp = core_max_hp
 		_start_wave()
-	elif wave_spawned >= wave_limit and enemies.is_empty():
+	elif floor_cleared:
+		floor_cleared = false
 		if floor_number >= FLOOR_COUNT:
 			campaign_won = true
 			lost = false
@@ -383,6 +391,7 @@ func _next_floor() -> void:
 		_start_wave()
 	else:
 		# Defeat retry: preserve permanent upgrades and restore a portion of core health.
+		floor_cleared = false
 		lost = false
 		core_hp = maxf(35.0, core_max_hp * 0.65)
 		_start_wave()
@@ -524,6 +533,7 @@ func _load_game() -> void:
 		message_clock = 8.0
 	# A loaded session starts a fresh wave; combat is never simulated while offline.
 	lost = false
+	floor_cleared = false
 	campaign_won = false
 	_start_wave()
 
