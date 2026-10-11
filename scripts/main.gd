@@ -1097,7 +1097,14 @@ func _guardian_attack() -> void:
 				damage = 6.0 * guardian_level
 		enemy["hp"] = float(enemy["hp"]) - damage
 		enemies[target_index] = enemy
-		shots.append({"angle": float(enemy["angle"]), "distance": float(enemy["distance"]), "life": 0.15, "color": Color(0.2, 0.92, 0.78)})
+		var skill_color := Color(0.2, 0.92, 0.78)
+		match guardian_kind:
+			0: skill_color = Color(1.0, 0.32, 0.24) # Varkhan: infernal strike.
+			1: skill_color = Color(0.30, 0.85, 1.0) # Nyxara: chained soul bolt.
+			2: skill_color = Color(0.96, 0.86, 0.62) # Morveth: bone shot.
+			3: skill_color = Color(0.32, 1.0, 0.52) # Grum: rune energy.
+			4: skill_color = Color(0.72, 0.35, 1.0) # Zippi: chaos burst.
+		shots.append({"angle": float(enemy["angle"]), "distance": float(enemy["distance"]), "life": 0.15, "color": skill_color})
 		if guardian_kind == 1 and enemies.size() > 1:
 			var chain_index := (target_index + 1) % enemies.size()
 			var chained: Dictionary = enemies[chain_index]
