@@ -2,7 +2,7 @@
 
 > **A 100-floor, offline-first Android idle tower-defense game in stylized 2D dark fantasy. You are the Demon Lord. Defend your Demonic Core against heroes climbing your tower to steal your treasure and kill you.**
 
-**Project status:** Early Godot implementation is underway. A first combat scene, initial core/guardian attack loop, floor data for all 100 floors, and CI validation workflow are committed. The Android APK pipeline is still being debugged; no APK is considered verified until the exact artifact passes metadata and installation checks.
+**Project status:** Godot implementation is underway. The game now includes an initial 360-degree defense loop, multi-wave floor progression, role-based hero behavior, upgradeable Soul Turret/Rift Trap, guardian progression, selectable research, core evolutions, relics, local versioned saves, capped offline rewards, a 100-floor map, endless survival, and prestige. A debug APK has been built and its package metadata/archive integrity verified at [GitHub Actions run #38153537513](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513). Physical-device testing and several roadmap systems remain incomplete; see [the roadmap](docs/ROADMAP.md).
 
 ## Project identity
 
