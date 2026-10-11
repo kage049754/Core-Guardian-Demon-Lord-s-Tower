@@ -254,11 +254,60 @@ func _update_combat(delta: float) -> void:
 		_guardian_attack()
 	for i in range(enemies.size() - 1, -1, -1):
 		var enemy: Dictionary = enemies[i]
-		enemy["angle"] = float(enemy["angle"]) + float(enemy["turn"]) * delta
+		var kind := int(enemy["kind"])
 		var distance := float(enemy["distance"]) - float(enemy["speed"]) * delta
+		enemy["angle"] = float(enemy["angle"]) + float(enemy["turn"]) * delta
+		enemy["special_clock"] = float(enemy.get("special_clock", 0.0)) + delta
+
+		# Rangers stop at range and fire at the core instead of charging into melee.
+		if kind == 1 and not bool(enemy["boss"]) and distance <= 160.0:
+			distance = maxf(150.0, distance)
+			enemy["ranged_clock"] = float(enemy.get("ranged_clock", 0.0)) + delta
+			if float(enemy["ranged_clock"]) >= 1.35:
+				enemy["ranged_clock"] = 0.0
+				_damage_core(float(enemy["damage"]) * 0.65)
+				if lost:
+					return
+		# Battle mages periodically blast the core from mid-range.
+		elif kind == 2 and distance <= 210.0:
+			if float(enemy["special_clock"]) >= 2.4:
+				enemy["special_clock"] = 0.0
+				_damage_core(float(enemy["damage"]) * 0.8)
+				if lost:
+					return
+		# Field medics heal a nearby injured hero, extending coordinated assaults.
+		elif kind == 3 and float(enemy["special_clock"]) >= 2.5:
+			enemy["special_clock"] = 0.0
+			var healed_index := -1
+			var lowest_ratio := 1.0
+			for ally_index in range(enemies.size()):
+				if ally_index == i:
+					continue
+				var ally: Dictionary = enemies[ally_index]
+				var ratio := float(ally["hp"]) / maxf(1.0, float(ally["max_hp"]))
+				if ratio < lowest_ratio and absf(float(ally["distance"]) - distance) < 125.0:
+					lowest_ratio = ratio
+					healed_index = ally_index
+			if healed_index >= 0:
+				var ally: Dictionary = enemies[healed_index]
+				ally["hp"] = minf(float(ally["max_hp"]), float(ally["hp"]) + float(ally["max_hp"]) * 0.08)
+				enemies[healed_index] = ally
+				message = "Field Medic restores a hero."
+				message_clock = 1.2
+
+		# Bosses use a telegraphed pulse on a cooldown; later phases hit harder.
+		if bool(enemy["boss"]) and distance <= 230.0 and float(enemy["special_clock"]) >= 3.2:
+			enemy["special_clock"] = 0.0
+			var hp_ratio := float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"]))
+			var phase_damage := 0.35 if hp_ratio > 0.33 else 0.65
+			_damage_core(float(enemy["damage"]) * phase_damage)
+			message = "%s unleashes a core-breaking technique!" % enemy["name"]
+			message_clock = 1.6
+			if lost:
+				return
+
 		enemy["distance"] = distance
-		enemy["attack_clock"] = float(enemy["attack_clock"]) + delta
-		if distance <= 100.0:
+		if kind != 1 and distance <= 100.0:
 			_damage_core(float(enemy["damage"]) * delta)
 			if lost:
 				return
@@ -287,6 +336,34 @@ func _spawn_enemy() -> void:
 	var hp := (75.0 + floor_number * 13.0) * scale
 	var speed := 17.0 + minf(12.0, floor_number * 0.08)
 	var damage := 5.0 + floor_number * 0.6
+	if not boss:
+		match kind:
+			0: # Vanguard: durable frontline.
+				hp *= 1.3
+				speed *= 0.9
+			1: # Ranger: lower health, attacks from range.
+				hp *= 0.8
+				speed *= 0.82
+				damage *= 0.8
+			2: # Battle Mage: medium health, dangerous ranged burst.
+				hp *= 0.9
+				speed *= 0.9
+				damage *= 1.15
+			3: # Field Medic: fragile support.
+				hp *= 0.72
+				speed *= 0.82
+				damage *= 0.55
+			4: # Shadow Assassin: fast, fragile infiltrator.
+				hp *= 0.68
+				speed *= 1.55
+				damage *= 1.25
+			5: # Siege Golem: slow and heavily armored.
+				hp *= 2.25
+				speed *= 0.52
+				damage *= 1.7
+			6: # Relic Hunter: durable specialist.
+				hp *= 1.25
+				speed *= 0.92
 	if boss:
 		hp *= 9.0
 		speed *= 0.68
@@ -303,6 +380,8 @@ func _spawn_enemy() -> void:
 		"damage": damage,
 		"turn": rng.randf_range(-0.12, 0.12),
 		"attack_clock": 0.0,
+		"special_clock": 0.0,
+		"ranged_clock": 0.0,
 		"boss": boss
 	}
 	enemies.append(enemy)
