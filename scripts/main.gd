@@ -138,7 +138,7 @@ func _button_style(color: Color) -> StyleBoxFlat:
 func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
-	var region := REGION_NAMES[mini(9, int((floor_number - 1) / 10))]
+	var region: String = str(REGION_NAMES[mini(9, int((floor_number - 1) / 10))])
 	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, wave_limit, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
 	status_label.text = "%s  |  Guardians Lv.%d  |  %s" % [region, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
