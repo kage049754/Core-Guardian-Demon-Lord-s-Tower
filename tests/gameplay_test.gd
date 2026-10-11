@@ -63,8 +63,47 @@ func run_tests() -> void:
 		_fail("Core evolution cycle failed.")
 		return
 
+	# Verify persisted progress restores, and offline earnings cannot be claimed twice.
+	game.floor_number = 6
+	game.gold = 321
+	game._save_game()
+	game.floor_number = 2
+	game.gold = 0
+	game._load_game()
+	if game.floor_number != 6 or game.gold < 321:
+		_fail("Local save did not restore floor and gold.")
+		return
+
+	var save_file := FileAccess.open("user://core_guardian_save.json", FileAccess.READ)
+	if save_file == null:
+		_fail("Save file was not created.")
+		return
+	var parsed_save: Variant = JSON.parse_string(save_file.get_as_text())
+	save_file.close()
+	if typeof(parsed_save) != TYPE_DICTIONARY:
+		_fail("Save JSON could not be parsed.")
+		return
+	var save_data: Dictionary = parsed_save
+	save_data["last_saved_unix"] = int(Time.get_unix_time_from_system()) - 120
+	var aged_file := FileAccess.open("user://core_guardian_save.json", FileAccess.WRITE)
+	if aged_file == null:
+		_fail("Could not prepare offline reward boundary test.")
+		return
+	aged_file.store_string(JSON.stringify(save_data))
+	aged_file.close()
+	var gold_before_offline := game.gold
+	game._load_game()
+	if game.gold < gold_before_offline + 2:
+		_fail("Two-minute offline reward was not credited.")
+		return
+	var gold_after_claim := game.gold
+	game._load_game()
+	if game.gold != gold_after_claim:
+		_fail("Offline reward was claimable more than once.")
+		return
+
 	game._new_game()
-	print("PASS: new game, boss spawn, turret damage, shield absorption, core defeat, research, and core evolution.")
+	print("PASS: startup, boss spawn, turret damage, shield absorption, defeat, research, evolution, save/load, and single-claim offline rewards.")
 	quit(0)
 
 func _fail(reason: String) -> void:
