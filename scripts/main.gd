@@ -81,6 +81,7 @@ var skill_ready := true
 var screen_size := Vector2(720, 1280)
 var ui_layer: CanvasLayer
 var menu_overlay: Control
+var results_overlay: Control
 var menu_open := true
 var hud_label: Label
 var status_label: Label
@@ -341,6 +342,9 @@ func _check_achievements() -> void:
 		_save_game()
 
 func _open_tower_map() -> void:
+	menu_open = true
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
 	_show_menu_panel("100-FLOOR TOWER MAP")
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(38, 140)
@@ -367,6 +371,8 @@ func _open_tower_map() -> void:
 func _select_floor(target_floor: int) -> void:
 	if target_floor < 1 or target_floor > highest_floor_unlocked:
 		return
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
 	floor_number = target_floor
 	wave_number = 1
 	endless_mode = target_floor > FLOOR_COUNT
@@ -434,7 +440,64 @@ func _set_reduced_effects(enabled: bool) -> void:
 	_save_game()
 	queue_redraw()
 
+
+func _show_floor_results() -> void:
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
+	results_overlay = Control.new()
+	results_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ui_layer.add_child(results_overlay)
+	var shade := ColorRect.new()
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.025, 0.018, 0.05, 0.94)
+	results_overlay.add_child(shade)
+	var title := Label.new()
+	var description := Label.new()
+	if lost:
+		title.text = "THE CORE HAS FALLEN"
+		description.text = "The heroes breached the Demonic Core. Retry this floor with your permanent research and relic collection intact."
+	elif campaign_won:
+		title.text = "THE THRONE REMAINS YOURS"
+		description.text = "All 100 floors are conquered. Enter Endless Spire to face stronger invasions and earn prestige seals."
+	else:
+		title.text = "FLOOR %03d CLEARED" % floor_number
+		description.text = "The invasion is defeated. Collect your rewards, prepare your defenses, then continue climbing."
+	title.position = Vector2(35, 280)
+	title.size = Vector2(650, 85)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 31)
+	title.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48))
+	results_overlay.add_child(title)
+	description.position = Vector2(65, 370)
+	description.size = Vector2(590, 110)
+	description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	description.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	description.add_theme_font_size_override("font_size", 18)
+	description.add_theme_color_override("font_color", Color(0.88, 0.84, 0.94))
+	results_overlay.add_child(description)
+	if lost:
+		_add_menu_button(results_overlay, "RETRY FLOOR", Rect2(110, 520, 500, 60), _next_floor)
+	elif campaign_won:
+		_add_menu_button(results_overlay, "ENTER ENDLESS SPIRE", Rect2(110, 520, 500, 60), _next_floor)
+	else:
+		_add_menu_button(results_overlay, "NEXT FLOOR", Rect2(110, 520, 500, 60), _next_floor)
+		_add_menu_button(results_overlay, "REPLAY THIS FLOOR", Rect2(110, 590, 500, 60), func(): _select_floor(floor_number))
+	_add_menu_button(results_overlay, "TOWER MAP", Rect2(110, 660, 500, 60), _open_tower_map)
+	_add_menu_button(results_overlay, "MAIN MENU", Rect2(110, 730, 500, 60), _open_main_menu)
+	menu_open = true
+	menu_overlay.visible = false
+
+func _close_results_overlay() -> void:
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
+	menu_open = false
+	menu_overlay.visible = false
+
 func _open_main_menu() -> void:
+	if is_instance_valid(results_overlay):
+		results_overlay.queue_free()
 	menu_open = true
 	_save_game()
 	menu_overlay.visible = true
@@ -1040,6 +1103,7 @@ func _on_core_breached() -> void:
 	message = "The Demonic Core has been destroyed."
 	message_clock = 999.0
 	_save_game()
+	_show_floor_results()
 
 func _on_enemy_defeated(enemy: Dictionary) -> void:
 	defeated += 1
@@ -1095,6 +1159,7 @@ func _complete_wave() -> void:
 	lost = false
 	campaign_won = false
 	_save_game()
+	_show_floor_results()
 
 func _upgrade_core() -> void:
 	var cost := _upgrade_cost()
@@ -1198,6 +1263,7 @@ func _next_floor() -> void:
 		endless_mode = true
 		floor_number = FLOOR_COUNT + 1
 		wave_number = 1
+		_close_results_overlay()
 		campaign_won = false
 		lost = false
 		core_hp = core_max_hp
@@ -1209,12 +1275,14 @@ func _next_floor() -> void:
 		if floor_number >= FLOOR_COUNT and not endless_mode:
 			campaign_won = true
 			lost = false
+			_show_floor_results()
 			message = "100 FLOORS CLEARED — tap NEXT FLOOR to enter endless survival."
 			message_clock = 999.0
 			_save_game()
 			return
 		floor_number += 1
 		highest_floor_unlocked = maxi(highest_floor_unlocked, floor_number)
+		_close_results_overlay()
 		wave_number = 1
 		lost = false
 		core_max_hp += 4.0
@@ -1225,6 +1293,7 @@ func _next_floor() -> void:
 		floor_cleared = false
 		lost = false
 		core_hp = maxf(35.0, core_max_hp * 0.65)
+		_close_results_overlay()
 		_start_wave()
 	_save_game()
 
