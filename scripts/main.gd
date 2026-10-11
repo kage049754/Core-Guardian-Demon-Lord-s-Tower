@@ -22,6 +22,10 @@ var background_art: Texture2D
 var floor_definitions: Array = []
 var guardian_definitions: Array = []
 var enemy_definitions: Array = []
+var relic_definitions: Array = []
+var unlocked_relics: Array = []
+var relic_fragments := 0
+var collection_overlay: Control
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
@@ -74,6 +78,7 @@ func _ready() -> void:
 	_load_floor_content()
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
 	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
+	relic_definitions = _load_content_array("res://content/relics.json", "relics")
 	_build_ui()
 	_load_game()
 	_start_wave()
@@ -181,7 +186,8 @@ func _build_main_menu() -> void:
 	menu_overlay.add_child(subtitle)
 	_add_menu_button(menu_overlay, "CONTINUE TOWER", Rect2(110, 545, 500, 70), _enter_tower)
 	_add_menu_button(menu_overlay, "NEW GAME", Rect2(110, 635, 500, 70), _confirm_new_game)
-	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 725, 500, 64), func(): get_tree().quit())
+	_add_menu_button(menu_overlay, "GUARDIANS & RELICS", Rect2(110, 725, 500, 64), _open_collection)
+	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 805, 500, 60), func(): get_tree().quit())
 
 func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
 	var button := Button.new()
@@ -195,6 +201,47 @@ func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: 
 	button.add_theme_stylebox_override("pressed", _button_style(Color(0.45, 0.22, 0.34)))
 	button.pressed.connect(action)
 	parent.add_child(button)
+
+func _open_collection() -> void:
+	menu_overlay.visible = false
+	collection_overlay = Control.new()
+	collection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ui_layer.add_child(collection_overlay)
+	var shade := ColorRect.new()
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.025, 0.018, 0.05, 0.98)
+	collection_overlay.add_child(shade)
+	var title := Label.new()
+	title.text = "GUARDIANS & RELICS"
+	title.position = Vector2(30, 70)
+	title.size = Vector2(660, 55)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48))
+	collection_overlay.add_child(title)
+	var body := Label.new()
+	var text_lines := ["GUARDIAN ROSTER"]
+	for guardian in guardian_definitions:
+		text_lines.append("• %s — %s" % [str(guardian.get("name", "Unknown Guardian")), str(guardian.get("role", "Guardian"))])
+	text_lines.append("")
+	text_lines.append("RELIC COLLECTION  ·  Fragments: %d" % relic_fragments)
+	if unlocked_relics.is_empty():
+		text_lines.append("No relics collected yet. Defeat milestone bosses to earn relics.")
+	else:
+		for relic in relic_definitions:
+			if unlocked_relics.has(str(relic.get("id", ""))):
+				text_lines.append("• %s — %s" % [str(relic.get("name", "Relic")), str(relic.get("effect", "Unknown effect"))])
+	body.text = "\n".join(text_lines)
+	body.position = Vector2(48, 150)
+	body.size = Vector2(624, 590)
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.add_theme_font_size_override("font_size", 18)
+	body.add_theme_color_override("font_color", Color(0.88, 0.84, 0.94))
+	collection_overlay.add_child(body)
+	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 64), func():
+		collection_overlay.queue_free()
+		menu_overlay.visible = true
+	)
 
 func _enter_tower() -> void:
 	menu_open = false
@@ -223,6 +270,8 @@ func _new_game() -> void:
 	gold = 0
 	souls = 0
 	research_points = 0
+	relic_fragments = 0
+	unlocked_relics.clear()
 	research_level = 0
 	research_ranks = {"core_mastery": 0, "demonology": 0, "engineering": 0, "soul_alchemy": 0, "lordship": 0}
 	guardian_level = 1
@@ -299,7 +348,7 @@ func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
-	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
+	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d   FRAGMENTS %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points, relic_fragments]
 	status_label.text = "%s  |  Core: %s  |  Guardians %d · Lv.%d  |  %s" % [region, core_evolution.capitalize(), guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
@@ -510,6 +559,8 @@ func _core_attack() -> void:
 	var damage := core_damage + research_level * 2.5
 	if core_evolution == "infernal":
 		damage *= 1.25
+	if unlocked_relics.has("shard_of_the_first_demon"):
+		damage *= 1.08
 	target["hp"] = float(target["hp"]) - damage
 	enemies[target_index] = target
 	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.16, "color": Color(0.65, 0.35, 1.0)})
@@ -546,6 +597,8 @@ func _guardian_attack() -> void:
 				damage = 18.0 * guardian_level
 				if int(enemy["kind"]) == 2 or int(enemy["kind"]) == 3:
 					damage *= 1.6
+					if unlocked_relics.has("healer_bane") and int(enemy["kind"]) == 3:
+						damage *= 1.15
 			3: # Grum: defensive support.
 				damage = 5.0 * guardian_level
 				if int(guardian_skill_clock) % 3 == 0:
@@ -597,6 +650,17 @@ func _on_enemy_defeated(enemy: Dictionary) -> void:
 	message = "%s defeated. The tower claims its reward." % enemy["name"]
 	message_clock = 2.0
 
+func _unlock_relic_for_floor() -> void:
+	for relic in relic_definitions:
+		var relic_id := str(relic.get("id", ""))
+		if relic_id.is_empty() or unlocked_relics.has(relic_id):
+			continue
+		if int(relic.get("unlock_floor", 999)) <= floor_number:
+			unlocked_relics.append(relic_id)
+			message = "Relic acquired: %s" % str(relic.get("name", relic_id))
+			message_clock = 4.0
+			return
+
 func _complete_wave() -> void:
 	if lost or floor_cleared or campaign_won:
 		return
@@ -612,6 +676,10 @@ func _complete_wave() -> void:
 	if bool(_floor_definition().get("boss_floor", floor_number % 10 == 0)):
 		research_points += 3
 		souls += 8
+		relic_fragments += 3
+		_unlock_relic_for_floor()
+		if unlocked_relics.has("dragon_heart"):
+			gold += int(float(gold) * 0.12)
 		message = "%s defeated. Floor %d cleared." % [str(_floor_definition().get("boss_name", "Milestone boss")), floor_number]
 	else:
 		message = "All invasion waves defeated. Floor %d cleared." % floor_number
@@ -669,7 +737,7 @@ func _evolve_core() -> void:
 func _cast_shield() -> void:
 	if not skill_ready or lost or campaign_won:
 		return
-	shield += 35.0 + research_level * 5.0
+	shield += (35.0 + research_level * 5.0) * (1.1 if unlocked_relics.has("broken_halo") else 1.0)
 	skill_ready = false
 	skill_cooldown = maxf(8.0, 20.0 - float(research_ranks.get("lordship", 0)) * 1.5)
 	message = "Emergency Shield absorbed incoming damage."
@@ -825,6 +893,8 @@ func _save_game() -> void:
 		"gold": gold,
 		"souls": souls,
 		"research_points": research_points,
+		"relic_fragments": relic_fragments,
+		"unlocked_relics": unlocked_relics,
 		"core_damage": core_damage,
 		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
@@ -893,6 +963,9 @@ func _load_game() -> void:
 	gold = maxi(0, int(data.get("gold", 0)))
 	souls = maxi(0, int(data.get("souls", 0)))
 	research_points = maxi(0, int(data.get("research_points", 0)))
+	relic_fragments = maxi(0, int(data.get("relic_fragments", 0)))
+	var saved_relics: Variant = data.get("unlocked_relics", [])
+	unlocked_relics = saved_relics if typeof(saved_relics) == TYPE_ARRAY else []
 	core_damage = maxf(1, float(data.get("core_damage", 12)))
 	core_evolution = str(data.get("core_evolution", "infernal"))
 	if not ["infernal", "abyssal", "soulbound"].has(core_evolution):
