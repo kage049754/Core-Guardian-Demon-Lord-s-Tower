@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "achievements": [
+    {
+      "id": "first_blood",
+      "name": "First Blood",
+      "description": "Defeat your first invading hero.",
+      "condition": "defeated>=1"
+    },
+    {
+      "id": "boss_hunter",
+      "name": "Boss Hunter",
+      "description": "Defeat a milestone boss.",
+      "condition": "bosses_defeated>=1"
+    },
+    {
+      "id": "treasure_hoarder",
+      "name": "Treasure Hoarder",
+      "description": "Hold 1,000 gold at once.",
+      "condition": "gold>=1000"
+    },
+    {
+      "id": "researcher",
+      "name": "Forbidden Scholar",
+      "description": "Purchase five permanent research ranks.",
+      "condition": "research_level>=5"
+    },
+    {
+      "id": "core_evolver",
+      "name": "A Different Heart",
+      "description": "Evolve the Demonic Core.",
+      "condition": "core_evolution!=infernal"
+    },
+    {
+      "id": "relic_keeper",
+      "name": "Relic Keeper",
+      "description": "Collect three different relics.",
+      "condition": "unlocked_relics>=3"
+    },
+    {
+      "id": "tower_conqueror",
+      "name": "Throne Unbroken",
+      "description": "Clear Floor 100 and complete the campaign.",
+      "condition": "campaign_won"
+    },
+    {
+      "id": "endless_survivor",
+      "name": "Beyond the Summit",
+      "description": "Reach Endless Floor 120.",
+      "condition": "endless_mode&&floor>=120"
+    },
+    {
+      "id": "prestige_lord",
+      "name": "Lord of Rebirth",
+      "description": "Perform your first prestige.",
+      "condition": "prestige_count>=1"
+    }
+  ]
+}
