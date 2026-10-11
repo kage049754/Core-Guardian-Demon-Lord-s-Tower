@@ -4,7 +4,7 @@ extends Node2D
 ## All combat outcomes are simulated here; _draw() only visualizes game state.
 
 const SAVE_PATH := "user://core_guardian_save.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const MAX_OFFLINE_SECONDS := 8 * 60 * 60
 const FLOOR_COUNT := 100
 const REGION_NAMES := [
@@ -336,6 +336,9 @@ func _new_game() -> void:
 	research_ranks = {"core_mastery": 0, "demonology": 0, "engineering": 0, "soul_alchemy": 0, "lordship": 0}
 	guardian_level = 1
 	guardian_count = 1
+	guardian_skill_clock = 0.0
+	skill_cooldown = 0.0
+	skill_ready = true
 	defeated = 0
 	lost = false
 	floor_cleared = false
