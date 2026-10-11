@@ -680,6 +680,8 @@ func _update_combat(delta: float) -> void:
 	for i in range(enemies.size() - 1, -1, -1):
 		var enemy: Dictionary = enemies[i]
 		var kind := int(enemy["kind"])
+		if bool(enemy.get("boss", false)):
+			enemy = _update_boss_phase(enemy)
 		var distance := float(enemy["distance"]) - float(enemy["speed"]) * delta
 		enemy["angle"] = float(enemy["angle"]) + float(enemy["turn"]) * delta
 		enemy["special_clock"] = float(enemy.get("special_clock", 0.0)) + delta
@@ -770,6 +772,24 @@ func _update_combat(delta: float) -> void:
 	if wave_spawned >= enemy_spawn_limit and enemies.is_empty():
 		_complete_wave()
 
+
+
+func _update_boss_phase(enemy: Dictionary) -> Dictionary:
+	var hp_ratio := float(enemy.get("hp", 1.0)) / maxf(1.0, float(enemy.get("max_hp", 1.0)))
+	var next_phase := 1 if hp_ratio > 0.66 else (2 if hp_ratio > 0.33 else 3)
+	var previous_phase := int(enemy.get("phase", 1))
+	if next_phase > previous_phase:
+		enemy["phase"] = next_phase
+		if next_phase == 2:
+			enemy["speed"] = float(enemy.get("speed", 1.0)) * 1.15
+			enemy["damage"] = float(enemy.get("damage", 1.0)) * 1.20
+			message = "%s enters Phase II: relentless assault!" % str(enemy.get("name", "Boss"))
+		else:
+			enemy["speed"] = float(enemy.get("speed", 1.0)) * 1.25
+			enemy["damage"] = float(enemy.get("damage", 1.0)) * 1.30
+			message = "%s enters its final phase!" % str(enemy.get("name", "Boss"))
+		message_clock = 2.0
+	return enemy
 
 func _apply_boss_special(enemy: Dictionary) -> Dictionary:
 	var boss_floor := floor_number
@@ -878,7 +898,8 @@ func _spawn_enemy() -> void:
 		"trap_clock": 0.0,
 		"telegraph_clock": 0.0,
 		"ranged_clock": 0.0,
-		"boss": boss
+		"boss": boss,
+		"phase": 1
 	}
 	enemies.append(enemy)
 	wave_spawned += 1
