@@ -214,6 +214,18 @@ func run_tests() -> void:
 		_fail("Campaign completion did not unlock Endless Spire.")
 		return
 
+	game.floor_number = 2
+	game.wave_number = game.waves_per_floor
+	game.wave_spawned = game.enemy_spawn_limit
+	game.enemies.clear()
+	game.floor_cleared = false
+	game.lost = false
+	game.campaign_won = false
+	game._complete_wave()
+	if not game.floor_cleared or not is_instance_valid(game.results_overlay):
+		_fail("Clearing a floor did not show the floor-results screen.")
+		return
+
 	game._new_game()
 	if not game.equipped_relics.is_empty() or not game.unlocked_relics.is_empty():
 		_fail("Fresh game retained relics from the previous save.")
