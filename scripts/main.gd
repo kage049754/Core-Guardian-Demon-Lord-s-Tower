@@ -26,6 +26,7 @@ var enemy_definitions: Array = []
 var research_definitions: Array = []
 var relic_definitions: Array = []
 var unlocked_relics: Array = []
+var equipped_relics: Array = []
 var relic_fragments := 0
 var collection_overlay: Control
 var reduced_effects := false
@@ -235,21 +236,46 @@ func _open_collection() -> void:
 	for guardian in guardian_definitions:
 		text_lines.append("• %s — %s" % [str(guardian.get("name", "Unknown Guardian")), str(guardian.get("role", "Guardian"))])
 	text_lines.append("")
-	text_lines.append("RELIC COLLECTION  ·  Fragments: %d" % relic_fragments)
+	text_lines.append("RELIC LOADOUT  ·  %d/3 equipped  ·  Fragments: %d" % [equipped_relics.size(), relic_fragments])
+	text_lines.append("Equipped relic bonuses apply during combat.")
 	if unlocked_relics.is_empty():
 		text_lines.append("No relics collected yet. Defeat milestone bosses to earn relics.")
-	else:
-		for relic in relic_definitions:
-			if unlocked_relics.has(str(relic.get("id", ""))):
-				text_lines.append("• %s — %s" % [str(relic.get("name", "Relic")), str(relic.get("effect", "Unknown effect"))])
 	body.text = "\n".join(text_lines)
-	body.position = Vector2(48, 150)
-	body.size = Vector2(624, 590)
+	body.position = Vector2(42, 140)
+	body.size = Vector2(636, 310)
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.add_theme_font_size_override("font_size", 18)
+	body.add_theme_font_size_override("font_size", 17)
 	body.add_theme_color_override("font_color", Color(0.88, 0.84, 0.94))
 	collection_overlay.add_child(body)
+	var row_y := 455.0
+	for relic in relic_definitions:
+		var relic_id := str(relic.get("id", ""))
+		if not unlocked_relics.has(relic_id):
+			continue
+		var equipped := equipped_relics.has(relic_id)
+		var button_text := ("UNEQUIP  ·  " if equipped else "EQUIP  ·  ") + str(relic.get("name", "Relic"))
+		_add_menu_button(collection_overlay, button_text, Rect2(70, row_y, 580, 42), func(): _toggle_relic(relic_id))
+		row_y += 48.0
 	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+
+func _toggle_relic(relic_id: String) -> void:
+	if not unlocked_relics.has(relic_id):
+		return
+	if equipped_relics.has(relic_id):
+		equipped_relics.erase(relic_id)
+	elif equipped_relics.size() < 3:
+		equipped_relics.append(relic_id)
+	else:
+		message = "Relic loadout is full. Unequip one first."
+		message_clock = 2.0
+		_update_ui()
+		return
+	_save_game()
+	_open_collection()
+
+func _has_relic(relic_id: String) -> bool:
+	return equipped_relics.has(relic_id)
 
 func _open_tower_map() -> void:
 	_show_menu_panel("100-FLOOR TOWER MAP")
@@ -781,7 +807,7 @@ func _core_attack() -> void:
 	var damage := core_damage + research_level * 2.5
 	if core_evolution == "infernal":
 		damage *= 1.25
-	if unlocked_relics.has("shard_of_the_first_demon"):
+	if _has_relic("shard_of_the_first_demon"):
 		damage *= 1.08
 	target["hp"] = float(target["hp"]) - damage
 	enemies[target_index] = target
@@ -863,7 +889,7 @@ func _guardian_attack() -> void:
 				damage = 18.0 * guardian_level
 				if int(enemy["kind"]) == 2 or int(enemy["kind"]) == 3:
 					damage *= 1.6
-					if unlocked_relics.has("healer_bane") and int(enemy["kind"]) == 3:
+					if _has_relic("healer_bane") and int(enemy["kind"]) == 3:
 						damage *= 1.15
 			3: # Grum: defensive support.
 				damage = 5.0 * guardian_level
@@ -923,6 +949,8 @@ func _unlock_relic_for_floor() -> void:
 			continue
 		if int(relic.get("unlock_floor", 999)) <= floor_number:
 			unlocked_relics.append(relic_id)
+			if equipped_relics.size() < 3:
+				equipped_relics.append(relic_id)
 			message = "Relic acquired: %s" % str(relic.get("name", relic_id))
 			message_clock = 4.0
 			return
@@ -944,7 +972,7 @@ func _complete_wave() -> void:
 		souls += 8
 		relic_fragments += 3
 		_unlock_relic_for_floor()
-		if unlocked_relics.has("dragon_heart"):
+		if _has_relic("dragon_heart"):
 			gold += int(float(gold) * 0.12)
 		message = "%s defeated. Floor %d cleared." % [str(_floor_definition().get("boss_name", "Milestone boss")), floor_number]
 	else:
@@ -1003,7 +1031,7 @@ func _evolve_core() -> void:
 func _cast_shield() -> void:
 	if not skill_ready or lost or campaign_won:
 		return
-	shield += (35.0 + research_level * 5.0) * (1.1 if unlocked_relics.has("broken_halo") else 1.0)
+	shield += (35.0 + research_level * 5.0) * (1.1 if _has_relic("broken_halo") else 1.0)
 	skill_ready = false
 	skill_cooldown = maxf(8.0, 20.0 - float(research_ranks.get("lordship", 0)) * 1.5)
 	message = "Emergency Shield absorbed incoming damage."
@@ -1224,6 +1252,7 @@ func _save_game() -> void:
 		"research_points": research_points,
 		"relic_fragments": relic_fragments,
 		"unlocked_relics": unlocked_relics,
+		"equipped_relics": equipped_relics,
 		"reduced_effects": reduced_effects,
 		"demon_seals": demon_seals,
 		"prestige_count": prestige_count,
@@ -1304,6 +1333,17 @@ func _load_game() -> void:
 	relic_fragments = maxi(0, int(data.get("relic_fragments", 0)))
 	var saved_relics: Variant = data.get("unlocked_relics", [])
 	unlocked_relics = saved_relics if typeof(saved_relics) == TYPE_ARRAY else []
+	var saved_equipped: Variant = data.get("equipped_relics", [])
+	equipped_relics = []
+	if typeof(saved_equipped) == TYPE_ARRAY:
+		for relic_id in saved_equipped:
+			if unlocked_relics.has(str(relic_id)) and equipped_relics.size() < 3 and not equipped_relics.has(str(relic_id)):
+				equipped_relics.append(str(relic_id))
+	if not data.has("equipped_relics"):
+		for relic_id in unlocked_relics:
+			if equipped_relics.size() >= 3:
+				break
+			equipped_relics.append(str(relic_id))
 	reduced_effects = bool(data.get("reduced_effects", false))
 	demon_seals = maxi(0, int(data.get("demon_seals", 0)))
 	prestige_count = maxi(0, int(data.get("prestige_count", 0)))
