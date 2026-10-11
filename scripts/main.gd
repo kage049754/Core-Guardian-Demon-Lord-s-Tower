@@ -1376,7 +1376,18 @@ func _draw() -> void:
 		var a := TAU * float(i) / 6.0 + game_clock * 0.04
 		var rune := center + Vector2(cos(a), sin(a)) * outer_radius * 0.60
 		draw_colored_polygon(PackedVector2Array([rune + Vector2(0, -10), rune + Vector2(7, 0), rune + Vector2(0, 10), rune + Vector2(-7, 0)]), Color(0.45, 0.24, 0.7, 0.75))
-	# The original crystal is drawn procedurally to keep this first slice asset-independent.
+	# Active shield skill: a pulsing barrier is a visual response to the saved combat state.
+	if shield > 0.0:
+		var shield_pulse := sin(game_clock * 5.0) * 3.0
+		var shield_alpha := clampf(0.30 + shield / 180.0, 0.30, 0.78)
+		if not reduced_effects:
+			draw_circle(center, 62.0 + shield_pulse, Color(0.18, 0.78, 1.0, shield_alpha * 0.16))
+		draw_arc(center, 62.0 + shield_pulse, 0.0, TAU, 72, Color(0.36, 0.88, 1.0, shield_alpha), 4.0, true)
+		for shield_rune in range(4):
+			var shield_angle := game_clock * 0.7 + TAU * float(shield_rune) / 4.0
+			var shield_point := center + Vector2(cos(shield_angle), sin(shield_angle)) * (62.0 + shield_pulse)
+			draw_circle(shield_point, 4.0, Color(0.75, 0.97, 1.0, shield_alpha))
+	# The core crystal changes color and shape emphasis with its selected evolution.
 	var pulse := 1.0 + sin(game_clock * 2.5) * 0.06
 	var core := PackedVector2Array([
 		center + Vector2(0, -43 * pulse), center + Vector2(30 * pulse, -5),
