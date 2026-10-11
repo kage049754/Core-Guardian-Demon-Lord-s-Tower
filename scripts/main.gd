@@ -25,7 +25,8 @@ var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
 var wave_number := 1
-var wave_limit := 5
+var waves_per_floor := 4
+var enemy_spawn_limit := 3
 var core_hp := 100.0
 var core_max_hp := 100.0
 var gold := 0
@@ -192,7 +193,7 @@ func _update_ui() -> void:
 	if not is_instance_valid(hud_label):
 		return
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
-	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, wave_limit, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
+	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
 	status_label.text = "%s  |  Guardians Lv.%d  |  %s" % [region, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
@@ -232,16 +233,19 @@ func _start_wave() -> void:
 	wave_spawned = 0
 	spawn_clock = 0.0
 	attack_clock = 0.0
-	wave_limit = 5 + int((floor_number - 1) / 5)
-	if floor_number % 10 == 0:
-		wave_limit = 1
-	message = "Floor %d invasion begins." % floor_number
+	waves_per_floor = int(_floor_definition().get("wave_count", 4 + int(floor_number / 8)))
+	waves_per_floor = clampi(waves_per_floor, 1, 12)
+	enemy_spawn_limit = 3 + int(floor_number / 20)
+	if bool(_floor_definition().get("boss_floor", floor_number % 10 == 0)):
+		waves_per_floor = 1
+		enemy_spawn_limit = 1
+	message = "Floor %d, wave %d/%d: invasion begins." % [floor_number, wave_number, waves_per_floor]
 	message_clock = 3.0
 
 func _update_combat(delta: float) -> void:
 	spawn_clock += delta
 	attack_clock += delta
-	if wave_spawned < wave_limit and spawn_clock >= maxf(0.35, 1.5 - floor_number * 0.006):
+	if wave_spawned < enemy_spawn_limit and spawn_clock >= maxf(0.35, 1.5 - floor_number * 0.006):
 		spawn_clock = 0.0
 		_spawn_enemy()
 	if attack_clock >= maxf(0.18, 1.0 / (attack_rate + research_level * 0.025)):
@@ -273,7 +277,7 @@ func _update_combat(delta: float) -> void:
 			shots.remove_at(i)
 		else:
 			shots[i] = shot
-	if wave_spawned >= wave_limit and enemies.is_empty():
+	if wave_spawned >= enemy_spawn_limit and enemies.is_empty():
 		_complete_wave()
 
 func _spawn_enemy() -> void:
@@ -359,17 +363,24 @@ func _on_enemy_defeated(enemy: Dictionary) -> void:
 	message_clock = 2.0
 
 func _complete_wave() -> void:
+	if lost or floor_cleared or campaign_won:
+		return
+	gold += 10 + floor_number * 2
+	if wave_number < waves_per_floor:
+		wave_number += 1
+		message = "Wave cleared. The next hero party is approaching."
+		message_clock = 3.0
+		_start_wave()
+		_save_game()
+		return
 	gold += 15 + floor_number * 3
-	if floor_number % 10 == 0:
+	if bool(_floor_definition().get("boss_floor", floor_number % 10 == 0)):
 		research_points += 3
 		souls += 8
-		message = "Milestone boss defeated. Floor %d cleared." % floor_number
-		message_clock = 5.0
+		message = "%s defeated. Floor %d cleared." % [str(_floor_definition().get("boss_name", "Milestone boss")), floor_number]
 	else:
-		message = "Wave cleared. Upgrade your defenses or continue."
-		message_clock = 3.0
-	wave_number += 1
-	# The player explicitly advances using NEXT FLOOR. Avoid surprise wave jumps.
+		message = "All invasion waves defeated. Floor %d cleared." % floor_number
+	message_clock = 5.0
 	floor_cleared = true
 	lost = false
 	campaign_won = false
