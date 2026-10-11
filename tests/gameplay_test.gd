@@ -135,8 +135,18 @@ func run_tests() -> void:
 		_fail("Offline reward was claimable more than once.")
 		return
 
+	game.unlocked_relics = ["shard_of_the_first_demon", "healer_bane", "broken_halo", "dragon_heart"]
+	game.equipped_relics.clear()
+	game._toggle_relic("shard_of_the_first_demon")
+	game._toggle_relic("healer_bane")
+	game._toggle_relic("broken_halo")
+	game._toggle_relic("dragon_heart")
+	if game.equipped_relics.size() != 3 or not game._has_relic("shard_of_the_first_demon") or game._has_relic("dragon_heart"):
+		_fail("Three-slot relic loadout limit or equipped bonuses failed.")
+		return
+
 	game._new_game()
-	print("PASS: startup, boss spawn, turret damage, shield absorption, defeat, research, evolution, save/load, and single-claim offline rewards.")
+	print("PASS: combat, boss mechanics, research, evolution, save/load, single-claim offline rewards, and relic loadout limits.")
 	quit(0)
 
 func _fail(reason: String) -> void:
