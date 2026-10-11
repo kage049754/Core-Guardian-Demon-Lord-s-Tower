@@ -33,6 +33,7 @@ var gold := 0
 var souls := 0
 var research_points := 0
 var core_damage := 12.0
+var core_evolution := "infernal"
 var attack_rate := 0.8
 var shield := 0.0
 var research_level := 0
@@ -114,13 +115,13 @@ func _build_ui() -> void:
 	status_label.add_theme_font_size_override("font_size", 16)
 	status_label.add_theme_color_override("font_color", Color(0.74, 0.84, 0.91))
 	root.add_child(status_label)
-	var y := 1030.0
+	var y := 980.0
 	_add_button(root, "UPGRADE CORE  ·  %s gold" % _upgrade_cost(), Rect2(22, y, 328, 72), _upgrade_core)
 	_add_button(root, "SUMMON GUARDIAN  ·  %s souls" % _summon_cost(), Rect2(366, y, 332, 72), _summon_guardian)
 	_add_button(root, "EMERGENCY SHIELD", Rect2(22, y + 82, 328, 72), _cast_shield)
 	_add_button(root, "RESEARCH  ·  %s gold" % _research_cost(), Rect2(366, y + 82, 332, 72), _buy_research)
 	_add_button(root, "NEXT FLOOR / RETRY", Rect2(22, y + 164, 676, 60), _next_floor)
-	_add_button(root, "SAVE GAME", Rect2(22, y + 234, 328, 52), _save_game)
+	_add_button(root, "EVOLVE CORE · 3 research", Rect2(22, y + 234, 328, 52), _evolve_core)
 	_add_button(root, "RESET SAVE", Rect2(366, y + 234, 332, 52), _reset_save)
 	_update_ui()
 
@@ -196,7 +197,7 @@ func _update_ui() -> void:
 		return
 	var region: String = str(_floor_definition().get("region", REGION_NAMES[mini(9, int((floor_number - 1) / 10))]))
 	hud_label.text = "FLOOR %03d / 100  ·  WAVE %d/%d\nCORE  %.0f/%.0f   ·   SHIELD %.0f\nGOLD %d   SOULS %d   RESEARCH %d" % [floor_number, wave_number, waves_per_floor, maxf(0, core_hp), core_max_hp, shield, gold, souls, research_points]
-	status_label.text = "%s  |  Guardians %d · Lv.%d  |  %s" % [region, guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
+	status_label.text = "%s  |  Core: %s  |  Guardians %d · Lv.%d  |  %s" % [region, core_evolution.capitalize(), guardian_count, guardian_level, message if message_clock > 0 else "Automatic defenses active."]
 	if lost:
 		status_label.text = "CORE BREACHED — the heroes stopped this run. Permanent research is retained."
 	elif floor_cleared:
@@ -216,6 +217,9 @@ func _update_ui() -> void:
 			"RESEARCH":
 				button.text = "RESEARCH  ·  %d gold" % _research_cost()
 				button.disabled = gold < _research_cost()
+			"EVOLVE CORE":
+				button.text = "EVOLVE CORE · 3 research"
+				button.disabled = research_points < 3 or lost or campaign_won
 			"EMERGENCY SHIELD":
 				button.text = "EMERGENCY SHIELD  ·  %s" % ("READY" if skill_ready else "%.1fs" % skill_cooldown)
 				button.disabled = not skill_ready or lost or campaign_won
@@ -457,6 +461,8 @@ func _guardian_attack() -> void:
 			enemies[second_index] = second
 
 func _damage_core(amount: float) -> void:
+	if core_evolution == "abyssal":
+		amount *= 0.8
 	var absorbed := minf(shield, amount)
 	shield -= absorbed
 	core_hp -= amount - absorbed
@@ -477,6 +483,9 @@ func _on_enemy_defeated(enemy: Dictionary) -> void:
 	defeated += 1
 	gold += 8 + floor_number * 2 + (25 if enemy["boss"] else 0)
 	souls += 1 + (5 if enemy["boss"] else 0)
+	if core_evolution == "soulbound":
+		gold += 2 + int(floor_number / 10)
+		souls += 1
 	if defeated % 5 == 0:
 		research_points += 1
 	message = "%s defeated. The tower claims its reward." % enemy["name"]
@@ -532,6 +541,24 @@ func _summon_guardian() -> void:
 		guardian_level += 1
 		message = "All guardians strengthened to level %d." % guardian_level
 	message_clock = 2.5
+
+func _evolve_core() -> void:
+	if research_points < 3 or lost or campaign_won:
+		return
+	research_points -= 3
+	match core_evolution:
+		"infernal":
+			core_evolution = "abyssal"
+			shield += core_max_hp * 0.2
+			message = "Abyssal Core awakened: incoming damage reduced."
+		"abyssal":
+			core_evolution = "soulbound"
+			message = "Soulbound Core awakened: defeated heroes yield extra resources."
+		_:
+			core_evolution = "infernal"
+			message = "Infernal Core awakened: core attacks deal increased damage."
+	message_clock = 3.0
+	_save_game()
 
 func _cast_shield() -> void:
 	if not skill_ready or lost or campaign_won:
@@ -671,6 +698,7 @@ func _save_game() -> void:
 		"souls": souls,
 		"research_points": research_points,
 		"core_damage": core_damage,
+		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
 		"research_level": research_level,
 		"guardian_level": guardian_level,
@@ -721,6 +749,9 @@ func _load_game() -> void:
 	souls = maxi(0, int(data.get("souls", 0)))
 	research_points = maxi(0, int(data.get("research_points", 0)))
 	core_damage = maxf(1, float(data.get("core_damage", 12)))
+	core_evolution = str(data.get("core_evolution", "infernal"))
+	if not ["infernal", "abyssal", "soulbound"].has(core_evolution):
+		core_evolution = "infernal"
 	attack_rate = maxf(0.1, float(data.get("attack_rate", 0.8)))
 	research_level = maxi(0, int(data.get("research_level", 0)))
 	guardian_level = maxi(1, int(data.get("guardian_level", 1)))
