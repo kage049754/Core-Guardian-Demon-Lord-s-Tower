@@ -519,16 +519,24 @@ func _update_combat(delta: float) -> void:
 				message = "Field Medic restores a hero."
 				message_clock = 1.2
 
-		# Bosses use a telegraphed pulse on a cooldown; later phases hit harder.
-		if bool(enemy["boss"]) and distance <= 230.0 and float(enemy["special_clock"]) >= 3.2:
-			enemy["special_clock"] = 0.0
-			var hp_ratio := float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"]))
-			var phase_damage := 0.35 if hp_ratio > 0.33 else 0.65
-			_damage_core(float(enemy["damage"]) * phase_damage)
-			message = "%s unleashes a core-breaking technique!" % enemy["name"]
-			message_clock = 1.6
-			if lost:
-				return
+		# Boss attacks telegraph before impact; the final phase deals more damage.
+		if bool(enemy["boss"]) and distance <= 230.0:
+			enemy["telegraph_clock"] = float(enemy.get("telegraph_clock", 0.0))
+			if float(enemy["special_clock"]) >= 3.2 and float(enemy["telegraph_clock"]) <= 0.0:
+				enemy["special_clock"] = 0.0
+				enemy["telegraph_clock"] = 0.85
+				message = "%s is charging a core-breaking technique!" % enemy["name"]
+				message_clock = 1.0
+			if float(enemy["telegraph_clock"]) > 0.0:
+				enemy["telegraph_clock"] = maxf(0.0, float(enemy["telegraph_clock"]) - delta)
+				if float(enemy["telegraph_clock"]) <= 0.0:
+					var hp_ratio := float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"]))
+					var phase_damage := 0.35 if hp_ratio > 0.33 else 0.65
+					_damage_core(float(enemy["damage"]) * phase_damage)
+					message = "%s unleashes the core-breaking technique!" % enemy["name"]
+					message_clock = 1.6
+					if lost:
+						return
 
 		enemy["distance"] = distance
 		if kind != 1 and distance <= 100.0:
@@ -610,6 +618,7 @@ func _spawn_enemy() -> void:
 		"turn": rng.randf_range(-0.12, 0.12),
 		"attack_clock": 0.0,
 		"special_clock": 0.0,
+		"telegraph_clock": 0.0,
 		"ranged_clock": 0.0,
 		"boss": boss
 	}
@@ -934,6 +943,9 @@ func _draw() -> void:
 		var pos := center + Vector2(cos(angle), sin(angle)) * distance
 		var color := _enemy_color(int(enemy["kind"]))
 		var size := 13.0 if not enemy["boss"] else 25.0
+		if bool(enemy["boss"]) and float(enemy.get("telegraph_clock", 0.0)) > 0.0:
+			draw_arc(center, distance, angle - 0.24, angle + 0.24, 18, Color(1.0, 0.18, 0.3, 0.95), 5.0, true)
+			draw_line(pos, center, Color(1.0, 0.18, 0.3, 0.55), 3.0, true)
 		if not reduced_effects:
 			draw_circle(pos, size + 4, Color(color.r, color.g, color.b, 0.18))
 		if hero_atlas != null:
