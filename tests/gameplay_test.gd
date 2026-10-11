@@ -159,7 +159,10 @@ func run_tests() -> void:
 		return
 
 	game._new_game()
-	print("PASS: combat, boss mechanics, research, evolution, save/load, offline rewards, relic loadouts, and achievement persistence.")
+	if not game.equipped_relics.is_empty() or not game.unlocked_relics.is_empty():
+		_fail("Fresh game retained relics from the previous save.")
+		return
+	print("PASS: combat, boss mechanics, research, evolution, save/load, offline rewards, relic loadouts, achievements, and fresh-save reset.")
 	quit(0)
 
 func _fail(reason: String) -> void:
