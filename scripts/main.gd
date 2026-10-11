@@ -26,6 +26,7 @@ var relic_definitions: Array = []
 var unlocked_relics: Array = []
 var relic_fragments := 0
 var collection_overlay: Control
+var reduced_effects := false
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
@@ -184,10 +185,12 @@ func _build_main_menu() -> void:
 	subtitle.add_theme_font_size_override("font_size", 17)
 	subtitle.add_theme_color_override("font_color", Color(0.84, 0.79, 0.91))
 	menu_overlay.add_child(subtitle)
-	_add_menu_button(menu_overlay, "CONTINUE TOWER", Rect2(110, 545, 500, 70), _enter_tower)
-	_add_menu_button(menu_overlay, "NEW GAME", Rect2(110, 635, 500, 70), _confirm_new_game)
-	_add_menu_button(menu_overlay, "GUARDIANS & RELICS", Rect2(110, 725, 500, 64), _open_collection)
-	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 805, 500, 60), func(): get_tree().quit())
+	_add_menu_button(menu_overlay, "CONTINUE TOWER", Rect2(110, 510, 500, 60), _enter_tower)
+	_add_menu_button(menu_overlay, "NEW GAME", Rect2(110, 580, 500, 60), _confirm_new_game)
+	_add_menu_button(menu_overlay, "GUARDIANS & RELICS", Rect2(110, 650, 500, 60), _open_collection)
+	_add_menu_button(menu_overlay, "TOWER MAP", Rect2(110, 720, 500, 60), _open_tower_map)
+	_add_menu_button(menu_overlay, "SETTINGS", Rect2(110, 790, 500, 60), _open_settings)
+	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 860, 500, 60), func(): get_tree().quit())
 
 func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> void:
 	var button := Button.new()
@@ -203,22 +206,7 @@ func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: 
 	parent.add_child(button)
 
 func _open_collection() -> void:
-	menu_overlay.visible = false
-	collection_overlay = Control.new()
-	collection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ui_layer.add_child(collection_overlay)
-	var shade := ColorRect.new()
-	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shade.color = Color(0.025, 0.018, 0.05, 0.98)
-	collection_overlay.add_child(shade)
-	var title := Label.new()
-	title.text = "GUARDIANS & RELICS"
-	title.position = Vector2(30, 70)
-	title.size = Vector2(660, 55)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 30)
-	title.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48))
-	collection_overlay.add_child(title)
+	_show_menu_panel("GUARDIANS & RELICS")
 	var body := Label.new()
 	var text_lines := ["GUARDIAN ROSTER"]
 	for guardian in guardian_definitions:
@@ -238,10 +226,76 @@ func _open_collection() -> void:
 	body.add_theme_font_size_override("font_size", 18)
 	body.add_theme_color_override("font_color", Color(0.88, 0.84, 0.94))
 	collection_overlay.add_child(body)
-	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 64), func():
+	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+func _open_tower_map() -> void:
+	_show_menu_panel("100-FLOOR TOWER MAP")
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(38, 140)
+	scroll.size = Vector2(644, 600)
+	collection_overlay.add_child(scroll)
+	var list := VBoxContainer.new()
+	list.custom_minimum_size = Vector2(610, 0)
+	scroll.add_child(list)
+	for floor_data in floor_definitions:
+		var n := int(floor_data.get("floor", 1))
+		var status := "CLEARED" if n < floor_number else ("CURRENT" if n == floor_number else "LOCKED")
+		var boss_text := "  ·  BOSS: " + str(floor_data.get("boss_name", "")) if bool(floor_data.get("boss_floor", false)) else ""
+		var row := Label.new()
+		row.text = "FLOOR %03d  ·  %s  ·  %s%s" % [n, str(floor_data.get("region", "Unknown Region")), status, boss_text]
+		row.custom_minimum_size = Vector2(610, 38)
+		row.add_theme_font_size_override("font_size", 15)
+		row.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48) if status == "CURRENT" else Color(0.75, 0.72, 0.83))
+		list.add_child(row)
+	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+func _open_settings() -> void:
+	_show_menu_panel("SETTINGS")
+	var description := Label.new()
+	description.text = "Autosave: enabled\nOffline earnings: maximum 8 hours\nNetwork connection: not required"
+	description.position = Vector2(55, 260)
+	description.size = Vector2(610, 120)
+	description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	description.add_theme_font_size_override("font_size", 18)
+	description.add_theme_color_override("font_color", Color(0.85, 0.82, 0.92))
+	collection_overlay.add_child(description)
+	var effects := CheckButton.new()
+	effects.text = "Reduce visual effects"
+	effects.position = Vector2(100, 420)
+	effects.size = Vector2(520, 65)
+	effects.button_pressed = reduced_effects
+	effects.add_theme_font_size_override("font_size", 21)
+	effects.toggled.connect(_set_reduced_effects)
+	collection_overlay.add_child(effects)
+	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+func _show_menu_panel(panel_title: String) -> void:
+	menu_overlay.visible = false
+	collection_overlay = Control.new()
+	collection_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ui_layer.add_child(collection_overlay)
+	var shade := ColorRect.new()
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.025, 0.018, 0.05, 0.98)
+	collection_overlay.add_child(shade)
+	var title := Label.new()
+	title.text = panel_title
+	title.position = Vector2(30, 65)
+	title.size = Vector2(660, 60)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48))
+	collection_overlay.add_child(title)
+
+func _close_menu_panel() -> void:
+	if is_instance_valid(collection_overlay):
 		collection_overlay.queue_free()
-		menu_overlay.visible = true
-	)
+	menu_overlay.visible = true
+
+func _set_reduced_effects(enabled: bool) -> void:
+	reduced_effects = enabled
+	_save_game()
+	queue_redraw()
 
 func _enter_tower() -> void:
 	menu_open = false
@@ -848,7 +902,8 @@ func _draw() -> void:
 		var pos := center + Vector2(cos(angle), sin(angle)) * distance
 		var color := _enemy_color(int(enemy["kind"]))
 		var size := 13.0 if not enemy["boss"] else 25.0
-		draw_circle(pos, size + 4, Color(color.r, color.g, color.b, 0.18))
+		if not reduced_effects:
+			draw_circle(pos, size + 4, Color(color.r, color.g, color.b, 0.18))
 		if hero_atlas != null:
 			var bob := sin(game_clock * 5.0 + angle) * 2.0
 			var source := Rect2(float(int(enemy["kind"]) * 100), 0, 100, 100)
@@ -859,12 +914,13 @@ func _draw() -> void:
 		draw_rect(Rect2(pos + Vector2(-18, size + 5), Vector2(36, 4)), Color(0.12, 0.08, 0.12))
 		draw_rect(Rect2(pos + Vector2(-18, size + 5), Vector2(36 * hp_ratio, 4)), Color(0.45, 0.93, 0.48))
 	# Attack streaks are effects only; damage is handled in the simulation.
-	for shot in shots:
-		var angle: float = shot["angle"]
-		var distance: float = shot["distance"]
-		var pos := center + Vector2(cos(angle), sin(angle)) * distance
-		var end := center + Vector2(cos(angle), sin(angle)) * maxf(40, distance - 32)
-		draw_line(pos, end, shot["color"], 3.0, true)
+	if not reduced_effects:
+		for shot in shots:
+			var angle: float = shot["angle"]
+			var distance: float = shot["distance"]
+			var pos := center + Vector2(cos(angle), sin(angle)) * distance
+			var end := center + Vector2(cos(angle), sin(angle)) * maxf(40, distance - 32)
+			draw_line(pos, end, shot["color"], 3.0, true)
 	# Core health bar.
 	var bar := Rect2(center.x - 112, center.y + 68, 224, 10)
 	draw_rect(bar, Color(0.12, 0.08, 0.16))
@@ -895,6 +951,7 @@ func _save_game() -> void:
 		"research_points": research_points,
 		"relic_fragments": relic_fragments,
 		"unlocked_relics": unlocked_relics,
+		"reduced_effects": reduced_effects,
 		"core_damage": core_damage,
 		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
@@ -966,6 +1023,7 @@ func _load_game() -> void:
 	relic_fragments = maxi(0, int(data.get("relic_fragments", 0)))
 	var saved_relics: Variant = data.get("unlocked_relics", [])
 	unlocked_relics = saved_relics if typeof(saved_relics) == TYPE_ARRAY else []
+	reduced_effects = bool(data.get("reduced_effects", false))
 	core_damage = maxf(1, float(data.get("core_damage", 12)))
 	core_evolution = str(data.get("core_evolution", "infernal"))
 	if not ["infernal", "abyssal", "soulbound"].has(core_evolution):
