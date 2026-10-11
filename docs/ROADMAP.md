@@ -118,9 +118,12 @@ For each scoped milestone:
 ## Current verified status
 
 - [x] Repository identified as `kage049754/Core-Guardian-Demon-Lord-s-Tower`, default branch `main`.
-- [ ] Project source/build system inspected.
-- [ ] Android build pipeline verified.
-- [ ] APK produced and verified.
-- [ ] Phase 1 playable combat implemented.
+- [x] Godot 4 project, main battle scene, and initial combat loop committed.
+- [x] Data file with 100 campaign floor definitions and ten milestone bosses committed; runtime reads floor region and boss names.
+- [x] Initial guardian and enemy archetype data files committed.
+- [x] Godot project validation workflow has completed successfully on earlier commits. Re-check the latest commit before relying on that result.
+- [ ] Android export workflow has not yet produced a verified APK; previous runs failed during Android SDK setup or export configuration, and fixes are being tested.
+- [ ] Phase 0 exit gate: APK produced, metadata checked, and installation/launch status recorded.
+- [ ] Phase 1 exit gate: complete playable floor, full combat acceptance tests, and verified Android build.
 
-**Note:** Documentation is not game implementation. Update this section only when evidence changes.
+**Current phase:** Phase 0 / Phase 1 foundation. Do not mark either phase complete until its exit gate passes. Documentation and data files are not proof that every designed mechanic is implemented.
