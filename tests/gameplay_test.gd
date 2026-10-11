@@ -168,6 +168,20 @@ func run_tests() -> void:
 		_fail("Replaying an earlier floor reduced campaign unlock progress.")
 		return
 
+	game.floor_number = 100
+	game.highest_floor_unlocked = 100
+	game.floor_cleared = true
+	game.campaign_won = false
+	game.endless_mode = false
+	game._next_floor()
+	if not game.campaign_won:
+		_fail("Clearing floor 100 did not complete the campaign.")
+		return
+	game._next_floor()
+	if game.floor_number != 101 or not game.endless_mode or game.campaign_won:
+		_fail("Campaign completion did not unlock Endless Spire.")
+		return
+
 	game._new_game()
 	if not game.equipped_relics.is_empty() or not game.unlocked_relics.is_empty():
 		_fail("Fresh game retained relics from the previous save.")
