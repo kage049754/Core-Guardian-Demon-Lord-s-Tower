@@ -42,6 +42,12 @@ var research_points := 0
 var core_damage := 12.0
 var core_evolution := "infernal"
 var attack_rate := 0.8
+var turret_level := 1
+var turret_damage := 7.0
+var turret_rate := 1.25
+var turret_clock := 0.0
+var trap_level := 1
+var trap_damage := 4.0
 var shield := 0.0
 var research_level := 0
 var demon_seals := 0
@@ -134,6 +140,8 @@ func _build_ui() -> void:
 	status_label.add_theme_color_override("font_color", Color(0.74, 0.84, 0.91))
 	root.add_child(status_label)
 	_add_button(root, "PAUSE / MENU", Rect2(22, 214, 160, 42), _open_main_menu)
+	_add_button(root, "UPGRADE TURRET  ·  %d gold" % _turret_cost(), Rect2(190, 214, 205, 42), _upgrade_turret)
+	_add_button(root, "UPGRADE TRAP  ·  %d gold" % _trap_cost(), Rect2(403, 214, 195, 42), _upgrade_trap)
 	var y := 980.0
 	_add_button(root, "UPGRADE CORE  ·  %s gold" % _upgrade_cost(), Rect2(22, y, 328, 72), _upgrade_core)
 	_add_button(root, "SUMMON GUARDIAN  ·  %s souls" % _summon_cost(), Rect2(366, y, 332, 72), _summon_guardian)
@@ -340,6 +348,12 @@ func _perform_prestige() -> void:
 	core_damage = 12.0
 	core_evolution = "infernal"
 	attack_rate = 0.8
+	turret_level = 1
+	turret_damage = 7.0
+	turret_rate = 1.25
+	turret_clock = 0.0
+	trap_level = 1
+	trap_damage = 4.0
 	shield = 0.0
 	gold = 0
 	souls = 0
@@ -485,6 +499,12 @@ func _update_ui() -> void:
 		if not is_instance_valid(button):
 			continue
 		match button.text.split("  ·")[0]:
+			"UPGRADE TURRET":
+				button.text = "UPGRADE TURRET  ·  %d gold" % _turret_cost()
+				button.disabled = gold < _turret_cost()
+			"UPGRADE TRAP":
+				button.text = "UPGRADE TRAP  ·  %d gold" % _trap_cost()
+				button.disabled = gold < _trap_cost()
 			"UPGRADE CORE":
 				button.text = "UPGRADE CORE  ·  %d gold" % _upgrade_cost()
 				button.disabled = gold < _upgrade_cost() or lost or campaign_won
@@ -528,6 +548,10 @@ func _start_wave() -> void:
 func _update_combat(delta: float) -> void:
 	spawn_clock += delta
 	attack_clock += delta
+	turret_clock += delta
+	if turret_clock >= turret_rate:
+		turret_clock = 0.0
+		_turret_attack()
 	if wave_spawned < enemy_spawn_limit and spawn_clock >= maxf(0.35, 1.5 - floor_number * 0.006):
 		spawn_clock = 0.0
 		_spawn_enemy()
@@ -541,6 +565,10 @@ func _update_combat(delta: float) -> void:
 		var distance := float(enemy["distance"]) - float(enemy["speed"]) * delta
 		enemy["angle"] = float(enemy["angle"]) + float(enemy["turn"]) * delta
 		enemy["special_clock"] = float(enemy.get("special_clock", 0.0)) + delta
+		enemy["trap_clock"] = float(enemy.get("trap_clock", 0.0)) + delta
+		if distance <= 230.0 and float(enemy["trap_clock"]) >= 1.2:
+			enemy["trap_clock"] = 0.0
+			enemy["hp"] = float(enemy["hp"]) - trap_damage * trap_level
 
 		# Rangers stop at range and fire at the core instead of charging into melee.
 		if kind == 1 and not bool(enemy["boss"]) and distance <= 160.0:
@@ -684,6 +712,7 @@ func _spawn_enemy() -> void:
 		"turn": rng.randf_range(-0.12, 0.12),
 		"attack_clock": 0.0,
 		"special_clock": 0.0,
+		"trap_clock": 0.0,
 		"telegraph_clock": 0.0,
 		"ranged_clock": 0.0,
 		"boss": boss
@@ -710,6 +739,50 @@ func _core_attack() -> void:
 	target["hp"] = float(target["hp"]) - damage
 	enemies[target_index] = target
 	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.16, "color": Color(0.65, 0.35, 1.0)})
+
+func _turret_cost() -> int:
+	return 40 + turret_level * 25 + floor_number * 2
+
+func _trap_cost() -> int:
+	return 50 + trap_level * 30 + floor_number * 2
+
+func _upgrade_turret() -> void:
+	var cost := _turret_cost()
+	if gold < cost:
+		return
+	gold -= cost
+	turret_level += 1
+	turret_damage += 5.0 + floor_number * 0.06
+	turret_rate = maxf(0.45, turret_rate - 0.035)
+	message = "Soul Turret upgraded to level %d." % turret_level
+	message_clock = 2.0
+	_save_game()
+
+func _upgrade_trap() -> void:
+	var cost := _trap_cost()
+	if gold < cost:
+		return
+	gold -= cost
+	trap_level += 1
+	trap_damage += 3.0 + floor_number * 0.04
+	message = "Rift Trap upgraded to level %d." % trap_level
+	message_clock = 2.0
+	_save_game()
+
+func _turret_attack() -> void:
+	if enemies.is_empty():
+		return
+	var target_index := 0
+	var best_distance := INF
+	for i in range(enemies.size()):
+		var distance_value: float = enemies[i]["distance"]
+		if distance_value < best_distance:
+			best_distance = distance_value
+			target_index = i
+	var target: Dictionary = enemies[target_index]
+	target["hp"] = float(target["hp"]) - turret_damage + float(research_ranks.get("engineering", 0)) * 2.0
+	enemies[target_index] = target
+	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.18, "color": Color(1.0, 0.68, 0.24)})
 
 func _guardian_attack() -> void:
 	if enemies.is_empty() or guardian_count <= 0:
@@ -916,6 +989,8 @@ func _buy_research() -> void:
 			guardian_level += 1
 		"engineering":
 			attack_rate += 0.08
+			turret_damage += 2.5
+			trap_damage += 1.5
 		"soul_alchemy":
 			# Offline time stays capped; research improves gold per offline minute.
 			gold += 0
@@ -1079,6 +1154,11 @@ func _save_game() -> void:
 		"core_damage": core_damage,
 		"core_evolution": core_evolution,
 		"attack_rate": attack_rate,
+		"turret_level": turret_level,
+		"turret_damage": turret_damage,
+		"turret_rate": turret_rate,
+		"trap_level": trap_level,
+		"trap_damage": trap_damage,
 		"research_level": research_level,
 		"research_ranks": research_ranks,
 		"guardian_level": guardian_level,
@@ -1156,6 +1236,11 @@ func _load_game() -> void:
 	if not ["infernal", "abyssal", "soulbound"].has(core_evolution):
 		core_evolution = "infernal"
 	attack_rate = maxf(0.1, float(data.get("attack_rate", 0.8)))
+	turret_level = maxi(1, int(data.get("turret_level", 1)))
+	turret_damage = maxf(1.0, float(data.get("turret_damage", 7.0)))
+	turret_rate = clampf(float(data.get("turret_rate", 1.25)), 0.45, 1.25)
+	trap_level = maxi(1, int(data.get("trap_level", 1)))
+	trap_damage = maxf(1.0, float(data.get("trap_damage", 4.0)))
 	research_level = maxi(0, int(data.get("research_level", 0)))
 	var saved_research: Variant = data.get("research_ranks", research_ranks)
 	if typeof(saved_research) == TYPE_DICTIONARY:
