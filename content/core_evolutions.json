@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "branches": [
+    {
+      "id": "infernal",
+      "name": "Infernal Core",
+      "theme": "Offense",
+      "nodes": [
+        {
+          "id": "ember_pulse",
+          "name": "Ember Pulse",
+          "rank_cap": 5,
+          "effect": "Core attacks add burn damage."
+        },
+        {
+          "id": "cataclysm",
+          "name": "Cataclysm",
+          "rank_cap": 3,
+          "effect": "Defeated enemies have a chance to cause area damage."
+        },
+        {
+          "id": "hellforged_turrets",
+          "name": "Hellforged Turrets",
+          "rank_cap": 5,
+          "effect": "Turrets gain attack power and attack speed."
+        }
+      ]
+    },
+    {
+      "id": "abyssal",
+      "name": "Abyssal Core",
+      "theme": "Defense",
+      "nodes": [
+        {
+          "id": "deep_barrier",
+          "name": "Deep Barrier",
+          "rank_cap": 5,
+          "effect": "Increases maximum shield capacity."
+        },
+        {
+          "id": "void_skin",
+          "name": "Void Skin",
+          "rank_cap": 5,
+          "effect": "Reduces incoming core damage."
+        },
+        {
+          "id": "dark_regeneration",
+          "name": "Dark Regeneration",
+          "rank_cap": 3,
+          "effect": "Restores core health between waves."
+        }
+      ]
+    },
+    {
+      "id": "soulbound",
+      "name": "Soulbound Core",
+      "theme": "Economy and summons",
+      "nodes": [
+        {
+          "id": "soul_siphon",
+          "name": "Soul Siphon",
+          "rank_cap": 5,
+          "effect": "Increases souls from defeated heroes."
+        },
+        {
+          "id": "summoner_throne",
+          "name": "Summoner Throne",
+          "rank_cap": 5,
+          "effect": "Guardians deal more damage."
+        },
+        {
+          "id": "eternal_tithe",
+          "name": "Eternal Tithe",
+          "rank_cap": 3,
+          "effect": "Improves capped offline gold income."
+        }
+      ]
+    }
+  ]
+}
