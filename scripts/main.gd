@@ -932,10 +932,22 @@ func _draw() -> void:
 		center + Vector2(18, 35), center + Vector2(-18, 35),
 		center + Vector2(-30 * pulse, -5)
 	])
-	draw_colored_polygon(core, Color(0.36, 0.13, 0.65))
-	draw_polyline(PackedVector2Array([core[0], core[1], core[2], core[3], core[4], core[0]]), Color(0.83, 0.64, 1.0), 3.0, true)
+	var core_fill := Color(0.36, 0.13, 0.65)
+	var core_edge := Color(0.83, 0.64, 1.0)
+	match core_evolution:
+		"infernal":
+			core_fill = Color(0.62, 0.16, 0.10)
+			core_edge = Color(1.0, 0.58, 0.25)
+		"abyssal":
+			core_fill = Color(0.08, 0.34, 0.55)
+			core_edge = Color(0.40, 0.90, 1.0)
+		"soulbound":
+			core_fill = Color(0.36, 0.13, 0.65)
+			core_edge = Color(0.83, 0.64, 1.0)
+	draw_colored_polygon(core, core_fill)
+	draw_polyline(PackedVector2Array([core[0], core[1], core[2], core[3], core[4], core[0]]), core_edge, 3.0, true)
 	draw_line(center + Vector2(0, -26), center + Vector2(0, 22), Color(0.95, 0.83, 1.0), 3.0, true)
-	draw_arc(center, 52, 0, TAU, 40, Color(0.75, 0.4, 1.0, 0.65), 3.0, true)
+	draw_arc(center, 52, 0, TAU, 40, Color(core_edge.r, core_edge.g, core_edge.b, 0.65), 3.0, true)
 	# Enemies are original stylized geometric silhouettes with role-specific colors.
 	for enemy in enemies:
 		var angle: float = enemy["angle"]
