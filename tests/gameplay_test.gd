@@ -91,12 +91,12 @@ func run_tests() -> void:
 		return
 	aged_file.store_string(JSON.stringify(save_data))
 	aged_file.close()
-	var gold_before_offline := game.gold
+	var gold_before_offline: int = int(game.gold)
 	game._load_game()
 	if game.gold < gold_before_offline + 2:
 		_fail("Two-minute offline reward was not credited.")
 		return
-	var gold_after_claim := game.gold
+	var gold_after_claim: int = int(game.gold)
 	game._load_game()
 	if game.gold != gold_after_claim:
 		_fail("Offline reward was claimable more than once.")
