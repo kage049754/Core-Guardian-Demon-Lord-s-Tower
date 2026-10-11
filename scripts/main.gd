@@ -780,7 +780,7 @@ func _turret_attack() -> void:
 			best_distance = distance_value
 			target_index = i
 	var target: Dictionary = enemies[target_index]
-	target["hp"] = float(target["hp"]) - turret_damage + float(research_ranks.get("engineering", 0)) * 2.0
+	target["hp"] = float(target["hp"]) - (turret_damage + float(research_ranks.get("engineering", 0)) * 2.0)
 	enemies[target_index] = target
 	shots.append({"angle": float(target["angle"]), "distance": float(target["distance"]), "life": 0.18, "color": Color(1.0, 0.68, 0.24)})
 
@@ -1060,6 +1060,19 @@ func _draw() -> void:
 		var p1 := center + Vector2(cos(a), sin(a)) * (outer_radius + 2)
 		var p2 := center + Vector2(cos(a), sin(a)) * (outer_radius + 12)
 		draw_line(p1, p2, Color(0.62, 0.37, 0.72), 2.0, true)
+	# Four Soul Turrets guard the central core.
+	for turret_index in range(4):
+		var turret_angle := TAU * float(turret_index) / 4.0 + PI / 4.0
+		var turret_pos := center + Vector2(cos(turret_angle), sin(turret_angle)) * outer_radius * 0.78
+		draw_circle(turret_pos, 15.0, Color(0.12, 0.08, 0.18))
+		draw_rect(Rect2(turret_pos - Vector2(9, 9), Vector2(18, 18)), Color(0.56, 0.34, 0.19))
+		draw_rect(Rect2(turret_pos - Vector2(5, 5), Vector2(10, 10)), Color(1.0, 0.68, 0.24))
+	# Rift Trap's inner rune ring marks the damaging zone.
+	draw_arc(center, outer_radius * 0.42, 0, TAU, 72, Color(0.95, 0.37, 0.25, 0.55), 2.0, true)
+	for trap_index in range(8):
+		var trap_angle := TAU * float(trap_index) / 8.0
+		var trap_pos := center + Vector2(cos(trap_angle), sin(trap_angle)) * outer_radius * 0.42
+		draw_colored_polygon(PackedVector2Array([trap_pos + Vector2(0, -7), trap_pos + Vector2(5, 4), trap_pos + Vector2(-5, 4)]), Color(0.95, 0.37, 0.25, 0.8))
 	# Defensive rune circle.
 	draw_arc(center, outer_radius * 0.60, 0, TAU, 72, Color(0.35, 0.18, 0.55, 0.7), 2.0, true)
 	for i in range(6):
