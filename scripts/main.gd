@@ -18,6 +18,8 @@ const GUARDIAN_NAMES := ["Varkhan · Abyss Knight", "Nyxara · Soul Weaver", "Mo
 var rng := RandomNumberGenerator.new()
 var hero_atlas: Texture2D
 var floor_definitions: Array = []
+var guardian_definitions: Array = []
+var enemy_definitions: Array = []
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
 var floor_number := 1
@@ -59,6 +61,8 @@ func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	hero_atlas = load("res://assets/characters/hero_atlas.svg")
 	_load_floor_content()
+	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
+	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
 	_build_ui()
 	_load_game()
 	_start_wave()
@@ -157,10 +161,28 @@ func _load_floor_content() -> void:
 	else:
 		push_warning("Expected 100 floor definitions; using fallback floor scaling.")
 
+
+func _load_content_array(path: String, key: String) -> Array:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("Content file missing: " + path)
+		return []
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_warning("Content file is invalid: " + path)
+		return []
+	var data: Dictionary = parsed
+	var value: Variant = data.get(key, [])
+	if typeof(value) != TYPE_ARRAY:
+		push_warning("Content array is missing: " + key)
+		return []
+	return value
+
 func _floor_definition() -> Dictionary:
-	var index := clampi(floor_number - 1, 0, floor_definitions.size() - 1)
 	if floor_definitions.is_empty():
 		return {}
+	var index := clampi(floor_number - 1, 0, floor_definitions.size() - 1)
 	var value: Variant = floor_definitions[index]
 	return value if typeof(value) == TYPE_DICTIONARY else {}
 
