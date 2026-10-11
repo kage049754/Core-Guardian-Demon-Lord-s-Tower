@@ -926,7 +926,7 @@ func _summon_guardian() -> void:
 	souls -= cost
 	if guardian_count < mini(5, maxi(1, guardian_definitions.size())):
 		guardian_count += 1
-		var new_name := GUARDIAN_NAMES[(guardian_count - 1) % GUARDIAN_NAMES.size()]
+		var new_name: String = str(GUARDIAN_NAMES[(guardian_count - 1) % GUARDIAN_NAMES.size()])
 		if guardian_count - 1 < guardian_definitions.size():
 			new_name = str(guardian_definitions[guardian_count - 1].get("name", new_name))
 		message = "%s joined your defense." % new_name
