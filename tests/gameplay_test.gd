@@ -107,6 +107,20 @@ func run_tests() -> void:
 		_fail("Local save did not restore floor and gold.")
 		return
 
+	var main_save_path := ProjectSettings.globalize_path("user://core_guardian_save.json")
+	var backup_save_path := ProjectSettings.globalize_path("user://core_guardian_save.json.bak")
+	if FileAccess.file_exists(backup_save_path):
+		DirAccess.remove_absolute(backup_save_path)
+	var backup_move_error := DirAccess.rename_absolute(main_save_path, backup_save_path)
+	if backup_move_error != OK:
+		_fail("Could not prepare backup recovery test.")
+		return
+	game.gold = 0
+	game._load_game()
+	if game.gold < 321 or not FileAccess.file_exists("user://core_guardian_save.json"):
+		_fail("Missing primary save did not recover from backup.")
+		return
+
 	var save_file := FileAccess.open("user://core_guardian_save.json", FileAccess.READ)
 	if save_file == null:
 		_fail("Save file was not created.")
