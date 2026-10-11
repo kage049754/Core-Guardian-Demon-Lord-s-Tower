@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "archetypes": [
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "role": "frontline",
+      "target_policy": "attack_nearest_defense",
+      "counterplay": "Sustained damage and slows"
+    },
+    {
+      "id": "ranger",
+      "name": "Ranger",
+      "role": "ranged_structure_damage",
+      "target_policy": "attack_structure_at_range",
+      "counterplay": "Priority targeting and mobile defenders"
+    },
+    {
+      "id": "battle_mage",
+      "name": "Battle Mage",
+      "role": "area_damage",
+      "target_policy": "target_cluster_and_shields",
+      "counterplay": "Interrupts and rapid elimination"
+    },
+    {
+      "id": "field_medic",
+      "name": "Field Medic",
+      "role": "healer",
+      "target_policy": "heal_lowest_health_ally",
+      "counterplay": "High priority target; interrupt healing"
+    },
+    {
+      "id": "shadow_assassin",
+      "name": "Shadow Assassin",
+      "role": "infiltrator",
+      "target_policy": "bypass_frontline_when_route_open",
+      "counterplay": "Detection, wards, and traps"
+    },
+    {
+      "id": "siege_golem",
+      "name": "Siege Golem",
+      "role": "armored_siege",
+      "target_policy": "prioritize_core_and_structures",
+      "counterplay": "Armor penetration and focused damage"
+    },
+    {
+      "id": "relic_hunter",
+      "name": "Relic Hunter",
+      "role": "adaptive_elite",
+      "target_policy": "pressure_relic_buffed_defenses",
+      "counterplay": "Disables and burst windows"
+    },
+    {
+      "id": "champion",
+      "name": "Champion",
+      "role": "elite",
+      "target_policy": "switch_between_high_value_targets",
+      "counterplay": "Layered defenses and skill timing"
+    }
+  ]
+}
