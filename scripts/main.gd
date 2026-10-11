@@ -24,6 +24,9 @@ var floor_definitions: Array = []
 var guardian_definitions: Array = []
 var enemy_definitions: Array = []
 var research_definitions: Array = []
+var achievement_definitions: Array = []
+var unlocked_achievements: Array = []
+var bosses_defeated := 0
 var relic_definitions: Array = []
 var unlocked_relics: Array = []
 var equipped_relics: Array = []
@@ -94,6 +97,7 @@ func _ready() -> void:
 	guardian_definitions = _load_content_array("res://content/guardians.json", "guardians")
 	enemy_definitions = _load_content_array("res://content/enemies.json", "archetypes")
 	research_definitions = _load_content_array("res://content/research.json", "branches")
+	achievement_definitions = _load_content_array("res://content/achievements.json", "achievements")
 	relic_definitions = _load_content_array("res://content/relics.json", "relics")
 	_build_ui()
 	_load_game()
@@ -111,6 +115,7 @@ func _process(delta: float) -> void:
 		game_clock += delta
 		_update_combat(delta)
 		_update_ui()
+	_check_achievements()
 	queue_redraw()
 
 func _notification(what: int) -> void:
@@ -209,11 +214,12 @@ func _build_main_menu() -> void:
 	_add_menu_button(menu_overlay, "CONTINUE TOWER", Rect2(110, 510, 500, 60), _enter_tower)
 	_add_menu_button(menu_overlay, "NEW GAME", Rect2(110, 580, 500, 60), _confirm_new_game)
 	_add_menu_button(menu_overlay, "GUARDIANS & RELICS", Rect2(110, 650, 500, 60), _open_collection)
-	_add_menu_button(menu_overlay, "TOWER MAP", Rect2(110, 720, 500, 60), _open_tower_map)
-	_add_menu_button(menu_overlay, "SETTINGS", Rect2(110, 790, 500, 60), _open_settings)
-	prestige_button = _add_menu_button(menu_overlay, "PRESTIGE", Rect2(110, 860, 500, 55), _confirm_prestige)
+	_add_menu_button(menu_overlay, "ACHIEVEMENTS", Rect2(110, 715, 500, 55), _open_achievements)
+	_add_menu_button(menu_overlay, "TOWER MAP", Rect2(110, 775, 500, 55), _open_tower_map)
+	_add_menu_button(menu_overlay, "SETTINGS", Rect2(110, 835, 500, 55), _open_settings)
+	prestige_button = _add_menu_button(menu_overlay, "PRESTIGE", Rect2(110, 895, 500, 50), _confirm_prestige)
 	prestige_button.disabled = true
-	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 925, 500, 55), func(): get_tree().quit())
+	_add_menu_button(menu_overlay, "QUIT", Rect2(110, 950, 500, 50), func(): get_tree().quit())
 
 func _add_menu_button(parent: Control, text_value: String, rect: Rect2, action: Callable) -> Button:
 	var button := Button.new()
@@ -276,6 +282,62 @@ func _toggle_relic(relic_id: String) -> void:
 
 func _has_relic(relic_id: String) -> bool:
 	return equipped_relics.has(relic_id)
+
+
+func _open_achievements() -> void:
+	_show_menu_panel("ACHIEVEMENTS")
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(45, 145)
+	scroll.size = Vector2(630, 590)
+	collection_overlay.add_child(scroll)
+	var list := VBoxContainer.new()
+	list.custom_minimum_size = Vector2(600, 0)
+	scroll.add_child(list)
+	for achievement in achievement_definitions:
+		var achievement_id := str(achievement.get("id", ""))
+		var unlocked := unlocked_achievements.has(achievement_id)
+		var row := Label.new()
+		row.text = ("UNLOCKED  ·  " if unlocked else "LOCKED  ·  ") + str(achievement.get("name", "Achievement")) + "\n" + str(achievement.get("description", ""))
+		row.custom_minimum_size = Vector2(590, 64)
+		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		row.add_theme_font_size_override("font_size", 17)
+		row.add_theme_color_override("font_color", Color(0.95, 0.77, 0.48) if unlocked else Color(0.65, 0.62, 0.72))
+		list.add_child(row)
+	_add_menu_button(collection_overlay, "BACK TO MENU", Rect2(110, 790, 500, 60), _close_menu_panel)
+
+func _check_achievements() -> void:
+	var newly_unlocked: Array[String] = []
+	for achievement in achievement_definitions:
+		var achievement_id := str(achievement.get("id", ""))
+		if achievement_id.is_empty() or unlocked_achievements.has(achievement_id):
+			continue
+		var complete := false
+		match achievement_id:
+			"first_blood":
+				complete = defeated >= 1
+			"boss_hunter":
+				complete = bosses_defeated >= 1
+			"treasure_hoarder":
+				complete = gold >= 1000
+			"researcher":
+				complete = research_level >= 5
+			"core_evolver":
+				complete = core_evolution != "infernal"
+			"relic_keeper":
+				complete = unlocked_relics.size() >= 3
+			"tower_conqueror":
+				complete = campaign_won
+			"endless_survivor":
+				complete = endless_mode and floor_number >= 120
+			"prestige_lord":
+				complete = prestige_count >= 1
+		if complete:
+			unlocked_achievements.append(achievement_id)
+			newly_unlocked.append(str(achievement.get("name", achievement_id)))
+	if not newly_unlocked.is_empty():
+		message = "Achievement unlocked: " + ", ".join(newly_unlocked)
+		message_clock = 4.0
+		_save_game()
 
 func _open_tower_map() -> void:
 	_show_menu_panel("100-FLOOR TOWER MAP")
@@ -934,6 +996,8 @@ func _on_core_breached() -> void:
 
 func _on_enemy_defeated(enemy: Dictionary) -> void:
 	defeated += 1
+	if bool(enemy.get("boss", false)):
+		bosses_defeated += 1
 	gold += 8 + floor_number * 2 + (25 if enemy["boss"] else 0)
 	souls += 1 + (5 if enemy["boss"] else 0)
 	if core_evolution == "soulbound":
@@ -1254,6 +1318,8 @@ func _save_game() -> void:
 		"research_points": research_points,
 		"relic_fragments": relic_fragments,
 		"unlocked_relics": unlocked_relics,
+		"unlocked_achievements": unlocked_achievements,
+		"bosses_defeated": bosses_defeated,
 		"equipped_relics": equipped_relics,
 		"reduced_effects": reduced_effects,
 		"demon_seals": demon_seals,
@@ -1335,6 +1401,9 @@ func _load_game() -> void:
 	relic_fragments = maxi(0, int(data.get("relic_fragments", 0)))
 	var saved_relics: Variant = data.get("unlocked_relics", [])
 	unlocked_relics = saved_relics if typeof(saved_relics) == TYPE_ARRAY else []
+	var saved_achievements: Variant = data.get("unlocked_achievements", [])
+	unlocked_achievements = saved_achievements if typeof(saved_achievements) == TYPE_ARRAY else []
+	bosses_defeated = maxi(0, int(data.get("bosses_defeated", 0)))
 	var saved_equipped: Variant = data.get("equipped_relics", [])
 	equipped_relics = []
 	if typeof(saved_equipped) == TYPE_ARRAY:
