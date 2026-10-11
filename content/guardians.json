@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "guardians": [
+    {
+      "id": "varkhan_abyss_knight",
+      "name": "Varkhan, Abyss Knight",
+      "role": "frontline_tank",
+      "unlock_floor": 1,
+      "base_stats": {
+        "health": 180,
+        "damage": 18,
+        "attack_rate": 0.75,
+        "range": 90
+      },
+      "skills": [
+        {
+          "id": "taunt",
+          "name": "Abyssal Challenge",
+          "description": "Draws nearby hero attention for a short duration."
+        }
+      ],
+      "evolution": {
+        "name": "Dread Commander",
+        "requirements": {
+          "guardian_level": 10,
+          "souls": 120
+        },
+        "effect": "Improves nearby guardian damage and defense."
+      }
+    },
+    {
+      "id": "nyxara_soul_weaver",
+      "name": "Nyxara, Soul Weaver",
+      "role": "ranged_magic",
+      "unlock_floor": 3,
+      "base_stats": {
+        "health": 85,
+        "damage": 22,
+        "attack_rate": 0.9,
+        "range": 240
+      },
+      "skills": [
+        {
+          "id": "chain_soul",
+          "name": "Chain Soul",
+          "description": "Soul bolts jump to additional enemies."
+        }
+      ],
+      "evolution": {
+        "name": "Soul Matriarch",
+        "requirements": {
+          "guardian_level": 10,
+          "souls": 150
+        },
+        "effect": "Soul bolts chain farther and restore a small amount of core shield."
+      }
+    },
+    {
+      "id": "morveth_bone_marksman",
+      "name": "Morveth, Bone Marksman",
+      "role": "priority_ranged",
+      "unlock_floor": 5,
+      "base_stats": {
+        "health": 75,
+        "damage": 35,
+        "attack_rate": 0.55,
+        "range": 320
+      },
+      "skills": [
+        {
+          "id": "piercing_bone",
+          "name": "Piercing Bone",
+          "description": "A charged shot pierces enemies and prioritizes support heroes."
+        }
+      ],
+      "evolution": {
+        "name": "Grave-Eye",
+        "requirements": {
+          "guardian_level": 10,
+          "souls": 140
+        },
+        "effect": "Improves critical damage against healers and mages."
+      }
+    },
+    {
+      "id": "grum_rune_golem",
+      "name": "Grum, Rune Golem",
+      "role": "defensive_support",
+      "unlock_floor": 7,
+      "base_stats": {
+        "health": 260,
+        "damage": 14,
+        "attack_rate": 0.45,
+        "range": 110
+      },
+      "skills": [
+        {
+          "id": "rune_aegis",
+          "name": "Rune Aegis",
+          "description": "Grants a temporary shield to the core and nearby structures."
+        }
+      ],
+      "evolution": {
+        "name": "World-Rune Colossus",
+        "requirements": {
+          "guardian_level": 10,
+          "souls": 170
+        },
+        "effect": "Increases shield strength and briefly stuns nearby attackers."
+      }
+    },
+    {
+      "id": "zippi_chaos_imp",
+      "name": "Zippi, Chaos Imp",
+      "role": "rapid_support",
+      "unlock_floor": 2,
+      "base_stats": {
+        "health": 65,
+        "damage": 8,
+        "attack_rate": 2.2,
+        "range": 190
+      },
+      "skills": [
+        {
+          "id": "chaos_burst",
+          "name": "Chaos Burst",
+          "description": "Rapid projectiles have a chance to weaken enemy armor."
+        }
+      ],
+      "evolution": {
+        "name": "Rift Jester",
+        "requirements": {
+          "guardian_level": 10,
+          "souls": 100
+        },
+        "effect": "Improves crowd damage and armor weakening."
+      }
+    }
+  ]
+}
