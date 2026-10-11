@@ -16,6 +16,7 @@ const ENEMY_NAMES := ["Vanguard", "Ranger", "Battle Mage", "Field Medic", "Shado
 const GUARDIAN_NAMES := ["Varkhan · Abyss Knight", "Nyxara · Soul Weaver", "Morveth · Bone Marksman", "Grum · Rune Golem", "Zippi · Chaos Imp"]
 
 var rng := RandomNumberGenerator.new()
+var hero_atlas: Texture2D
 var floor_definitions: Array = []
 var enemies: Array[Dictionary] = []
 var shots: Array[Dictionary] = []
@@ -56,6 +57,7 @@ var buttons: Array[Button] = []
 func _ready() -> void:
 	rng.randomize()
 	screen_size = get_viewport_rect().size
+	hero_atlas = load("res://assets/characters/hero_atlas.svg")
 	_load_floor_content()
 	_build_ui()
 	_load_game()
@@ -460,7 +462,12 @@ func _draw() -> void:
 		var color := _enemy_color(int(enemy["kind"]))
 		var size := 13.0 if not enemy["boss"] else 25.0
 		draw_circle(pos, size + 4, Color(color.r, color.g, color.b, 0.18))
-		draw_colored_polygon(PackedVector2Array([pos + Vector2(0, -size), pos + Vector2(size, 0), pos + Vector2(0, size), pos + Vector2(-size, 0)]), color)
+		if hero_atlas != null:
+			var bob := sin(game_clock * 5.0 + angle) * 2.0
+			var source := Rect2(float(int(enemy["kind"]) * 100), 0, 100, 100)
+			draw_texture_rect_region(hero_atlas, Rect2(pos + Vector2(-size, -size + bob), Vector2(size * 2.0, size * 2.0)), source, Color.WHITE, false, true)
+		else:
+			draw_colored_polygon(PackedVector2Array([pos + Vector2(0, -size), pos + Vector2(size, 0), pos + Vector2(0, size), pos + Vector2(-size, 0)]), color)
 		var hp_ratio := clampf(float(enemy["hp"]) / maxf(1.0, float(enemy["max_hp"])), 0, 1)
 		draw_rect(Rect2(pos + Vector2(-18, size + 5), Vector2(36, 4)), Color(0.12, 0.08, 0.12))
 		draw_rect(Rect2(pos + Vector2(-18, size + 5), Vector2(36 * hp_ratio, 4)), Color(0.45, 0.93, 0.48))
