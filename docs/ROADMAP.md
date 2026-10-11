@@ -14,25 +14,25 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 - [x] Confirm Godot 4 / GDScript as the initial engine target.
 - [x] Add Android export preset, debug-signing setup, and a CI workflow; export still needs to pass.
 - [x] Add Godot import/startup validation workflow. Gameplay-specific automated tests remain incomplete.
-- [ ] Produce a real minimal APK; inspect package metadata and artifact integrity.
+- [x] Produce a debug APK and verify package metadata and archive integrity (run [#38153537513](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513), commit `1ca22bfba54edd7ceb1158774d34b2a052b66513`).
 - [ ] Install and launch on a compatible Android device if device access is available.
 
 **Exit gate:** a real APK artifact exists, can be retrieved, and its package metadata and install/launch status are documented. Do not mark this gate complete based on CI status alone.
 
 ## Phase 1 — Playable combat foundation
 
-- [ ] Initial battle scene, core health, automatic core attacks, guardian damage, enemy movement, targeting, damage, cooldowns, and defeat handling are present; this item remains open until the complete acceptance test suite passes.
-- [ ] Initial automatic attacks and wave spawning/completion logic exist; multi-wave encounter flow and validation remain incomplete.
-- [ ] Implement win, defeat, pause, restart, and a real upgrade choice.
+- [x] Initial battle scene, core health, automatic core attacks, guardian damage, enemy movement, targeting, damage, cooldowns, and defeat handling are implemented and pass Godot parse/startup checks; combat-specific acceptance tests remain open.
+- [x] Multi-wave floor progression, boss-floor spawning, floor-clear state, defeat/retry, and explicit next-floor flow are implemented; full combat playthrough validation remains open.
+- [x] Implement floor clear, core defeat/retry, pause-to-menu, new game, and real upgrade choices. Full-device playtesting remains open.
 - [ ] Add automated gameplay tests for damage, targeting, cooldowns, wave completion, and core destruction.
-- [ ] Export and verify an Android build.
+- [x] Export and verify a debug Android APK artifact on the current implementation checkpoint.
 
 **Exit gate:** one complete playable floor with a functional defeat and victory loop, not a static demonstration.
 
 ## Phase 2 — Original art and animation
 
 - [ ] Define visual style, palette, sprite scale, outline, and asset pipeline.
-- [ ] Create original core, environment, guardian, enemy, projectile, and UI art.
+- [ ] Original hero atlas and Outer Gate background SVG are integrated, with procedural core, turrets, traps and combat effects. Complete distinct guardian sprites and production art for all regions remain open.
 - [ ] Implement idle, walk, attack, cast, hit, stun, and death states.
 - [ ] Integrate projectile trails, impact bursts, shields, runes, status indicators, and damage feedback.
 - [ ] Verify animation follows real simulation state.
@@ -42,20 +42,20 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 
 ## Phase 3 — Hero AI and defensive strategy
 
-- [ ] Implement role-based enemy priorities and stable retargeting.
-- [ ] Implement party formations, healer support, ranged positioning, and boss skill timing.
+- [x] Implement role-based enemy stats, nearest-target core/turret attacks, ranger standoff attacks, mage bursts, healer support, assassin speed and siege-golem durability.
+- [ ] Healer support, ranged positioning and boss skill timing are implemented; full party formations and coordinated pathfinding remain open.
 - [ ] Implement pathfinding around blockers and alternate routes where the map supports them.
-- [ ] Add Soul Turret, Rift Trap, Void Ward, and Summoning Gate.
-- [ ] Add player skills and status effects.
-- [ ] Add first multi-phase boss with clear telegraphs.
+- [ ] Soul Turret and Rift Trap are implemented and upgradeable; Void Ward and Summoning Gate remain open.
+- [ ] Emergency Shield is implemented; the remaining active skills and complete status-effect suite remain open.
+- [x] Add boss attack telegraphs and phase-scaled damage. Distinct mechanics for every milestone boss remain open.
 - [ ] Test AI behavior, structure targeting, and viable defense builds.
 
 **Exit gate:** several viable defensive builds can complete the same encounter, and hero behavior is meaningfully tactical.
 
 ## Phase 4 — Floors 1–10 and progression
 
-- [ ] Implement The Outer Gate, ten playable floors, data-driven waves, and Knight-Captain boss.
-- [ ] Add floor map, rewards, results screen, unlock rules, and replay behavior.
+- [ ] Data for all 100 floors, ten regions and ten milestone bosses exists, and the tower map is implemented. Full playable encounter testing for floors 1–10 remains open.
+- [ ] Tower map, basic rewards and floor unlock/retry flow exist; a dedicated results screen and verified replay behavior remain open.
 - [ ] Add initial guardian collection and bestiary.
 - [ ] Test all floor links, boss conditions, rewards, and progression persistence.
 
@@ -63,26 +63,26 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 
 ## Phase 5 — Saves, research, and idle systems
 
-- [ ] Implement versioned local save schema and migrations.
-- [ ] Implement atomic writes and corrupted-save recovery.
-- [ ] Implement the five permanent research branches.
-- [ ] Implement offline earnings and a configurable cap, initially 8 hours.
-- [ ] Ensure combat waves and bosses do not advance offline in the first release.
-- [ ] Prevent duplicate offline claims and resource duplication.
-- [ ] Implement prestige with explicit reset preview and confirmation.
+- [x] Implement versioned local save schema (version 3) with defaults for older saves.
+- [x] Implement temporary-file writes, backup rename/restore and save-version validation; corruption recovery still needs automated fault-injection tests.
+- [x] Implement selectable permanent research branches with distinct core, guardian, engineering, idle-income and ability-cooldown effects.
+- [x] Implement offline gold earnings capped at 8 hours and a return summary.
+- [x] Combat does not advance while the app is closed.
+- [x] Save a new timestamp immediately after calculating offline rewards; additional exploit and boundary tests remain open.
+- [x] Implement prestige eligibility at endless floor 120, a reset preview, Demon Seals, and retention of permanent research/relics.
 - [ ] Test force-stop/reopen, migrations, interrupted writes, offline time boundaries, and defeat persistence.
 
 **Exit gate:** progress survives app restarts, offline rewards are bounded and claimable once, and permanent progression survives defeat.
 
 ## Phase 6 — Full 100-floor campaign
 
-- [ ] Implement all ten regions and floor data for floors 1–100.
+- [x] Define all 100 campaign floors, ten regions and ten boss milestones in data. Unique encounters and region-specific environments remain open.
 - [ ] Implement all milestone bosses and their distinct phases/mechanics.
 - [ ] Expand original guardian, enemy, skill, relic, and evolution roster.
 - [ ] Implement Infernal, Abyssal, and Soulbound Core paths.
 - [ ] Implement relic loadouts, achievements, and permanent unlocks.
-- [ ] Implement the four-hero Legendary Hero Party and multi-stage Floor 100 encounter.
-- [ ] Unlock endless survival after campaign victory.
+- [ ] Floor 100 spawns a four-role Legendary Hero Party with boss telegraphs; authored multi-stage party mechanics remain open.
+- [x] Unlock endless floors after the 100-floor campaign and support milestone bosses every tenth endless floor.
 - [ ] Validate every floor's data, progression path, rewards, and completion conditions.
 
 **Exit gate:** all 100 floors can be reached and completed under the intended rules, with no missing encounters or progression softlocks.
@@ -94,7 +94,7 @@ This is the canonical implementation sequence. The scope is a complete 100-floor
 - [ ] Test narrow screens, touch targets, pause/resume, background/foreground, and system navigation.
 - [ ] Test save recovery and offline calculations on Android.
 - [ ] Produce release and debug APKs as appropriate; keep signing secrets out of Git.
-- [ ] Verify final artifact exists, is retrievable, has correct package metadata, and installs.
+- [x] Verify the debug APK artifact is retrievable and has correct package metadata/archive integrity. Physical-device installation remains unverified.
 - [ ] Smoke-test startup, battle, upgrades, core destruction, victory, save/load, and offline rewards on a device where possible.
 - [ ] Document setup, build commands, release procedure, limitations, and known issues.
 
@@ -118,12 +118,12 @@ For each scoped milestone:
 ## Current verified status
 
 - [x] Repository identified as `kage049754/Core-Guardian-Demon-Lord-s-Tower`, default branch `main`.
-- [x] Godot 4 project, main battle scene, and initial combat loop committed.
-- [x] Data file with 100 campaign floor definitions and ten milestone bosses committed; runtime reads floor region and boss names.
-- [x] Initial guardian and enemy archetype data files committed.
-- [x] Godot project validation workflow has completed successfully on earlier commits. Re-check the latest commit before relying on that result.
-- [ ] Android export workflow has not yet produced a verified APK; previous runs failed during Android SDK setup or export configuration, and fixes are being tested.
-- [ ] Phase 0 exit gate: APK produced, metadata checked, and installation/launch status recorded.
-- [ ] Phase 1 exit gate: complete playable floor, full combat acceptance tests, and verified Android build.
+- [x] Godot 4 project, main battle scene, menu, battle HUD, tower map, collection, settings and reduced-effects toggle are committed.
+- [x] Data files define all 100 floors, ten regions, ten milestone bosses, five guardians, eight enemy archetypes, five research branches, three core evolution branches and six relics.
+- [x] Core attacks, upgradeable Soul Turret and Rift Trap, guardian attacks, role-based hero behavior, multi-wave floors, boss telegraphs, four-hero Floor 100 invasion, core evolutions, relic collection, endless mode and prestige are implemented in code.
+- [x] Godot validation passed on commit `1ca22bfba54edd7ceb1158774d34b2a052b66513`: [validation run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537575).
+- [x] Android debug APK built and verified on commit `1ca22bfba54edd7ceb1158774d34b2a052b66513`: [build run](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513), [artifact](https://github.com/kage049754/Core-Guardian-Demon-Lord-s-Tower/actions/runs/38153537513/artifacts/11707433601). Package `com.coreguardian.demonlordstower`, version `0.1.0`, min SDK 21, target SDK 34, ARM64; APK archive integrity passed.
+- [ ] Physical-device installation, launch, and gameplay testing have not been performed.
+- [ ] Combat-specific automated tests, save fault-injection tests, full 100-floor balance/playthrough, unique boss mechanics, all planned guardian animations, relic loadouts/achievements, and device performance profiling remain incomplete.
 
-**Current phase:** Phase 0 / Phase 1 foundation. Do not mark either phase complete until its exit gate passes. Documentation and data files are not proof that every designed mechanic is implemented.
+**Current status:** A verified debug APK exists, but the complete game and all roadmap exit gates are not done. Keep implementing and testing; do not mark Phase 0, Phase 1 or the final release complete until their full exit gates pass.
